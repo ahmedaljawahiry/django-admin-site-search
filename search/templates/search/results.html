@@ -1,0 +1,43 @@
+<div id="search-site-results" class="results-container">
+    <template x-if="results.apps.length > 0">
+        <ul>
+            <template x-for="app in results.apps" :key="app.id">
+                <li>
+                    <a class="result result-heading"
+                       x-bind:href="app.url"
+                       @keydown="onKeyDown">
+                        <span x-text="app.name"></span>
+                        <span class="result-suffix">- app</span>
+                        <div class="divider"></div>
+                    </a>
+                    <template x-if="app.models.length > 0">
+                        <ul>
+                            <template x-for="model in app.models" :key="model.id">
+                                <li>
+                                    <a class="result result-entry"
+                                       x-bind:href="model.url"
+                                       @keydown="onKeyDown">
+                                        <span x-text="model.name"></span>
+                                        <span class="result-suffix">- model</span>
+                                    </a>
+                                    <template x-if="model.objects.length > 0">
+                                        <ul>
+                                            <template x-for="object in model.objects" :key="object.id">
+                                                <li>
+                                                    <a class="result result-entry"
+                                                       x-bind:href="object.url"
+                                                       x-text="object.name"
+                                                       @keydown="onKeyDown"></a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </template>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                </li>
+            </template>
+        </ul>
+    </template>
+</div>

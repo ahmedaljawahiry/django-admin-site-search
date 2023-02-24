@@ -1,0 +1,12 @@
+{% load static %}
+
+{% if not is_popup %}
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.11.1/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" defer></script>
+    <script src="{% static 'search/alpine.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'search/style.css' %}">
+    <style>
+        {# Prevent "Alpine flash": https://ryangjchandler.co.uk/posts/hiding-elements-until-alpine-is-ready-with-x-cloak#}
+        [x-cloak] { display: none !important;}
+    </style>
+{% endif %}

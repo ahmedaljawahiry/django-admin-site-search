@@ -1,0 +1,15 @@
+<div class="search-input">
+    <label id="site-search-label" for="search-site-input">{% include "search/icon.html" %}</label>
+    <input x-model="value"
+           x-on:input.debounce.750ms="onInputDebounce()"
+           x-on:input="onInputInstant()"
+           @keydown.arrow-down="focusOnLink({ index: 0 })"
+           @keydown.arrow-up="focusOnLink({ index: 'last' })"
+           @keydown.arrow-down.prevent=""
+           @keydown.arrow-up.prevent=""
+           id="search-site-input"
+           name="search-site-input"
+           type="text"
+           placeholder="Search..."
+           autoComplete="off"/>
+</div>
