@@ -2,11 +2,11 @@
 from django.contrib import admin
 from django.contrib.admin.apps import AdminConfig
 
-from search.views import AdminSiteSearchMixin
+from admin_site_search.views import AdminSiteSearchView
 
 
-class CustomAdminSite(AdminSiteSearchMixin, admin.AdminSite):
-    """Adds the AdminSiteSearchMixin to the default AdminSite"""
+class CustomAdminSite(AdminSiteSearchView, admin.AdminSite):
+    """Adds the AdminSiteSearchView to the default AdminSite"""
 
     pass
 

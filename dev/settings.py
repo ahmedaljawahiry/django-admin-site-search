@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "dev.apps.app_one",
     "dev.apps.app_two",
-    "search",
+    "admin_site_search",
 ]
 
 MIDDLEWARE = [

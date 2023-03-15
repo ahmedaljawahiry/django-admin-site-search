@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.urls import path
 
 
-class AdminSiteSearchMixin:
+class AdminSiteSearchView:
     """Mixin that adds a search/ view, to the admin site"""
 
     def get_urls(self):
