@@ -16,8 +16,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "dev.apps.app_one",
-    "dev.apps.app_two",
+    "dev.football.core",
+    "dev.football.players",
+    "dev.football.stadiums",
+    "dev.football.teams",
     "admin_site_search",
 ]
 
