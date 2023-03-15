@@ -43,7 +43,7 @@ class PlayerAttributes(BaseModel):
         default=50,
         validators=[MaxValueValidator(100), MinValueValidator(1)],
     )
-    score_attack = models.PositiveSmallIntegerField(
+    score_offence = models.PositiveSmallIntegerField(
         help_text=_("The player's attacking score, out of 100"),
         default=50,
         validators=[MaxValueValidator(100), MinValueValidator(1)],
