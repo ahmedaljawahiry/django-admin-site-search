@@ -1,29 +1,29 @@
 """Test factories for the players app"""
-import factory
-from factory.fuzzy import BaseFuzzyAttribute
+from factory import fuzzy, django, SubFactory
 
 from dev.football.players.models import Player, PlayerAttributes
 
 
-class PlayerFactory(factory.django.DjangoModelFactory):
+class PlayerFactory(django.DjangoModelFactory):
     """Factory for the Player model"""
 
-    name = factory.fuzzy.FuzzyText()
-    key = factory.fuzzy.FuzzyText()
+    name = fuzzy.FuzzyText()
+    key = fuzzy.FuzzyText()
 
     class Meta:
         model = Player
 
 
-class PlayerAttributesFactory(factory.django.DjangoModelFactory):
+class PlayerAttributesFactory(django.DjangoModelFactory):
     """Factory for the Player model"""
 
-    player = factory.SubFactory(PlayerFactory)
+    player = SubFactory(PlayerFactory)
     position = "CM"
-    age = factory.fuzzy.FuzzyInteger(low=1, high=50)
-    score_defence = factory.fuzzy.FuzzyInteger(low=1, high=100)
-    score_midfield = factory.fuzzy.FuzzyInteger(low=1, high=100)
-    score_offence = factory.fuzzy.FuzzyInteger(low=1, high=100)
+    age = fuzzy.FuzzyInteger(low=1, high=50)
+    nationality = "British"
+    score_defence = fuzzy.FuzzyInteger(low=1, high=100)
+    score_midfield = fuzzy.FuzzyInteger(low=1, high=100)
+    score_offence = fuzzy.FuzzyInteger(low=1, high=100)
 
     class Meta:
         model = PlayerAttributes

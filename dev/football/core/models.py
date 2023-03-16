@@ -10,6 +10,3 @@ class BaseModel(models.Model):
     class Meta:
         ordering = ["created_at"]
         abstract = True
-
-    def __str__(self):
-        return str(self.id)

@@ -17,6 +17,10 @@ class Stadium(BaseModel):
     )
     capacity = models.IntegerField(help_text=_("The full capacity of the stadium"))
 
+    def __str__(self):
+        """Returns the Stadium's name"""
+        return self.name
+
 
 class Pitch(BaseModel):
     """Model representing a Football Pitch"""

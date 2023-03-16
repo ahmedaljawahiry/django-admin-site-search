@@ -1,13 +1,18 @@
+"""Basic settings for local development and tests"""
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = "NOT_A_SECRET"
-
 DEBUG = True
-
+BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY = "NOT_A_SECRET"
 ALLOWED_HOSTS = []
+ROOT_URLCONF = "dev.urls"
+STATIC_URL = "static/"
+WSGI_APPLICATION = "dev.wsgi.application"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
 
 INSTALLED_APPS = [
     "dev.admin.CustomAdminConfig",
@@ -33,8 +38,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "dev.urls"
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -51,8 +54,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "dev.wsgi.application"
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -60,29 +61,5 @@ DATABASES = {
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
-USE_I18N = True
-
-USE_TZ = True
-
-STATIC_URL = "static/"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# this drastically speeds up tests
+PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]

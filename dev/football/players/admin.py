@@ -4,18 +4,18 @@ from dev.football.core.admin import BaseAdmin
 from dev.football.players.models import Player, PlayerAttributes, PlayerContract
 
 
-class PlayerAttributesInline(admin.TabularInline):
-    """Inline admin for Player Attributes"""
-
-    model = PlayerAttributes
-    extra = 0
-
-
 @admin.register(Player)
 class PlayerAdmin(BaseAdmin):
     """Admin for the Player model"""
 
-    inlines = (PlayerAttributesInline,)
+    pass
+
+
+@admin.register(PlayerAttributes)
+class PlayerAttributes(BaseAdmin):
+    """Admin for the PlayerAttributes model"""
+
+    pass
 
 
 @admin.register(PlayerContract)

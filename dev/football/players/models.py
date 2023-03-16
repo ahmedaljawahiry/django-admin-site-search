@@ -17,6 +17,10 @@ class Player(BaseModel):
         unique=True,
     )
 
+    def __str__(self):
+        """Returns the Player's name"""
+        return self.name
+
 
 class PlayerAttributes(BaseModel):
     """Model representing a set of attributes for a Football Player"""
@@ -31,6 +35,9 @@ class PlayerAttributes(BaseModel):
         max_length=2,
         choices=[(p.name, p.value) for p in PlayerPosition],
         help_text=_("The player's primary position"),
+    )
+    nationality = models.CharField(
+        max_length=64, help_text=_("The player's current nationality")
     )
     age = models.PositiveSmallIntegerField(help_text=_("The current age of the player"))
     score_defence = models.PositiveSmallIntegerField(

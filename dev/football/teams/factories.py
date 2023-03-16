@@ -1,36 +1,36 @@
 """Test factories for the teams app"""
-import factory
-from factory.fuzzy import BaseFuzzyAttribute
+from factory import fuzzy, django, SubFactory
 
 from dev.football.stadiums.factories import StadiumFactory
 from dev.football.teams.models import Team, Squad
 
 
-class FuzzyURL(factory.fuzzy.BaseFuzzyAttribute):
+class FuzzyURL(fuzzy.BaseFuzzyAttribute):
     """Fuzzy class for URLs"""
 
     def fuzz(self):
         """Returns a random .com url"""
-        return f"https://{factory.fuzzy.FuzzyText().fuzz()}.com".lower()
+        return f"https://{fuzzy.FuzzyText().fuzz()}.com".lower()
 
 
-class TeamFactory(factory.django.DjangoModelFactory):
+class TeamFactory(django.DjangoModelFactory):
     """Factory for the Team model"""
 
-    name = factory.fuzzy.FuzzyText()
-    key = factory.fuzzy.FuzzyText()
+    name = fuzzy.FuzzyText()
+    key = fuzzy.FuzzyText()
     type = "CLUB"
     website = FuzzyURL()
-    stadium = factory.SubFactory(StadiumFactory)
+    motto = fuzzy.FuzzyText()
+    stadium = SubFactory(StadiumFactory)
 
     class Meta:
         model = Team
 
 
-class SquadFactory(factory.django.DjangoModelFactory):
+class SquadFactory(django.DjangoModelFactory):
     """Factory for the Squad model"""
 
-    team = factory.SubFactory(TeamFactory)
+    team = SubFactory(TeamFactory)
     type = "SENIOR_MEN"
 
     class Meta:

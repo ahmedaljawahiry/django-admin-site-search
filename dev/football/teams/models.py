@@ -23,6 +23,12 @@ class Team(BaseModel):
         help_text=_("The type of team"),
     )
     website = models.URLField(help_text=_("Link to the official website"))
+    motto = models.CharField(
+        max_length=255, help_text=_("The official motto/slogan of the club")
+    )
+    description = models.TextField(
+        help_text=_("A description of the team and it's history")
+    )
     stadium = models.ForeignKey(
         "stadiums.Stadium",
         on_delete=models.SET_NULL,
@@ -30,6 +36,10 @@ class Team(BaseModel):
         null=True,
         help_text=_("The stadium that the team currently plays in, as home"),
     )
+
+    def __str__(self):
+        """Returns the Team's name"""
+        return self.name
 
 
 class Squad(BaseModel):
