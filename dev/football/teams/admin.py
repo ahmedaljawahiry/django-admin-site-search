@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from dev.football.core.admin import BaseAdmin
-from dev.football.teams.models import Team, Squad
+from dev.football.teams.models import Squad, Team
 
 
 @admin.register(Team)

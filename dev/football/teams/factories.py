@@ -1,8 +1,8 @@
 """Test factories for the teams app"""
-from factory import fuzzy, django, SubFactory
+from factory import SubFactory, django, fuzzy
 
 from dev.football.stadiums.factories import StadiumFactory
-from dev.football.teams.models import Team, Squad
+from dev.football.teams.models import Squad, Team
 
 
 class FuzzyURL(fuzzy.BaseFuzzyAttribute):

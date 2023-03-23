@@ -1,4 +1,4 @@
-from django.db.models import CharField, Q, Model, Field, QuerySet, TextField
+from django.db.models import CharField, Field, Model, Q, QuerySet, TextField
 from django.http import JsonResponse
 from django.urls import path
 

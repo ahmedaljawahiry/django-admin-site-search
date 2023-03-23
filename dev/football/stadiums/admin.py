@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from dev.football.core.admin import BaseAdmin
-from dev.football.stadiums.models import Stadium, Pitch
+from dev.football.stadiums.models import Pitch, Stadium
 
 
 @admin.register(Stadium)

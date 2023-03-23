@@ -1,7 +1,7 @@
 """Test factories for the stadiums app"""
-from factory import fuzzy, django, SubFactory
+from factory import SubFactory, django, fuzzy
 
-from dev.football.stadiums.models import Stadium, Pitch
+from dev.football.stadiums.models import Pitch, Stadium
 
 
 class StadiumFactory(django.DjangoModelFactory):

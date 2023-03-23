@@ -1,7 +1,7 @@
 """Pytest config and fixtures"""
 import pytest
-from django.test.client import Client
 from django.contrib.auth.models import User
+from django.test.client import Client
 
 
 @pytest.fixture(autouse=True)
