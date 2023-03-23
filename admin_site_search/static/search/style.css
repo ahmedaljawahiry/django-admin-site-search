@@ -68,7 +68,7 @@
     flex-direction: column;
     gap: 10px;
     background-color: var(--body-bg);
-    border-radius: 5px;
+    border-radius: 15px;
     text-align: left;
     width: 100%;
     min-height: 400px;
