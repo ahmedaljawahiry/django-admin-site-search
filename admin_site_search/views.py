@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from django.db.models import CharField, Field, Model, Q, QuerySet, TextField
 from django.http import JsonResponse
 from django.urls import path
@@ -89,7 +91,7 @@ class AdminSiteSearchView:
         return query.lower() in name.lower()
 
     def match_model(
-        self, query: str, name: str, object_name: str, fields: list[Field]
+        self, query: str, name: str, object_name: str, fields: List[Field]
     ) -> bool:
         """Case-insensitive match the model and field names"""
         _query = query.lower()
@@ -105,7 +107,7 @@ class AdminSiteSearchView:
         return False
 
     def match_objects(
-        self, query: str, model_class: Model, model_fields: list[Field]
+        self, query: str, model_class: Model, model_fields: List[Field]
     ) -> QuerySet:
         """Returns the QuerySet after performing an OR filter across all fields
         in the model"""
@@ -123,7 +125,7 @@ class AdminSiteSearchView:
 
         return results
 
-    def filter_field(self, query: str, field: Field) -> Q | None:
+    def filter_field(self, query: str, field: Field) -> Optional[Q]:
         """Returns a Q 'icontains' filter for Char & Text fields, otherwise None"""
         if isinstance(field, CharField) or isinstance(field, TextField):
             return Q(**{f"{field.name}__icontains": query})
