@@ -18,7 +18,7 @@ ELEMENTS_CUSTOM = [
 # presence confirms that the default header is still loaded, and not overridden
 ELEMENT_HEADER = '<a href="/admin/">Django administration</a>'
 # presence confirms that the default "user tools" are still loaded, and not overridden
-ELEMENT_USER_TOOL = '<button type="submit">Log out</button>'
+ELEMENT_USER_TOOL = '<div id="user-tools">'
 
 
 def request_admin_content(
