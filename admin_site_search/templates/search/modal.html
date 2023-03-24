@@ -1,26 +1,28 @@
-<template x-data x-if="$store.search.isOpen">
-    <div role="dialog"
-         aria-modal="true"
-         id="search-modal"
-         class="search-modal-container"
-         x-trap="$store.search.isOpen"
-         @click="$store.search.close()"
-         @keydown.meta.k="$store.search.toggle()"
-         @keydown.ctrl.k="$store.search.toggle()"
-         @keyup.esc="$store.search.close()"
-         x-cloak="true">
-        <div class="search-modal-cover"></div>
-        <div class="search-modal" x-data="siteSearch">
-            <div class="search-modal-body" @click.stop>
-                {% include "search/input.html" %}
-                <template x-if="helpText">
-                    <p class="search-modal-help-text" x-text="helpText">Enter 2 or more characters...</p>
-                </template>
-                <template x-if="helpText === 'Searching...'">
-                    {% include "search/spinner.html" %}
-                </template>
-                {% include "search/results.html" %}
+{% if not is_popup and request.user.is_authenticated %}
+    <template x-data x-if="$store.search.isOpen">
+        <div role="dialog"
+             aria-modal="true"
+             id="search-modal"
+             class="search-modal-container"
+             x-trap="$store.search.isOpen"
+             @click="$store.search.close()"
+             @keydown.meta.k="$store.search.toggle()"
+             @keydown.ctrl.k="$store.search.toggle()"
+             @keyup.esc="$store.search.close()"
+             x-cloak="true">
+            <div class="search-modal-cover"></div>
+            <div class="search-modal" x-data="siteSearch">
+                <div class="search-modal-body" @click.stop>
+                    {% include "search/input.html" %}
+                    <template x-if="helpText">
+                        <p class="search-modal-help-text" x-text="helpText">Enter 2 or more characters...</p>
+                    </template>
+                    <template x-if="helpText === 'Searching...'">
+                        {% include "search/spinner.html" %}
+                    </template>
+                    {% include "search/results.html" %}
+                </div>
             </div>
         </div>
-    </div>
-</template>
+    </template>
+{% endif %}

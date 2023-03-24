@@ -1,5 +1,5 @@
 {% load static %}
-{% if not is_popup %}
+{% if not is_popup and request.user.is_authenticated %}
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.11.1/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" defer></script>
     <script src="{% static 'search/alpine.js' %}"></script>
