@@ -5,3 +5,4 @@ recursive-include admin_site_search/templates *
 
 recursive-exclude dev *
 recursive-exclude tests *
+recursive-exclude images *
