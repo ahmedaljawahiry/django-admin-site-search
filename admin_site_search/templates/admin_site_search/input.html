@@ -1,5 +1,5 @@
 <div class="search-input">
-    <label id="site-search-label" for="search-site-input">{% include "search/icon.html" %}</label>
+    <label id="site-search-label" for="search-site-input">{% include "admin_site_search/icon.html" %}</label>
     <input x-model="value"
            x-on:input.debounce.750ms="onInputDebounce()"
            x-on:input="onInputInstant()"

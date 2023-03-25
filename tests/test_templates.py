@@ -8,9 +8,9 @@ from django.urls import reverse
 ELEMENTS_CUSTOM = [
     '<script src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.11.1/dist/cdn.min.js" defer>',
     '<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" defer>',
-    '<script src="/static/search/alpine.js">',
+    '<script src="/static/admin_site_search/alpine.js">',
     "[x-cloak] { display: none !important;}",
-    '<link rel="stylesheet" href="/static/search/style.css">',
+    '<link rel="stylesheet" href="/static/admin_site_search/style.css">',
     '<template x-data x-if="$store.search.isOpen">',
     '<button id="search-site-button"',
 ]

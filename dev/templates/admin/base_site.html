@@ -1,13 +1,13 @@
 {% extends "admin/base_site.html" %}
 {% block extrahead %}
-    {% include 'search/head.html' %}
+    {% include 'admin_site_search/head.html' %}
     {{ block.super }}
 {% endblock %}
 {% block header %}
     {{ block.super }}
-    {% include 'search/modal.html' %}
+    {% include 'admin_site_search/modal.html' %}
 {% endblock %}
 {% block usertools %}
-    {% include 'search/button.html' %}
+    {% include 'admin_site_search/button.html' %}
     {{ block.super }}
 {% endblock %}

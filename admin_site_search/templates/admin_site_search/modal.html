@@ -13,14 +13,14 @@
             <div class="search-modal-cover"></div>
             <div class="search-modal" x-data="siteSearch">
                 <div class="search-modal-body" @click.stop>
-                    {% include "search/input.html" %}
+                    {% include "admin_site_search/input.html" %}
                     <template x-if="helpText">
                         <p class="search-modal-help-text" x-text="helpText">Enter 2 or more characters...</p>
                     </template>
                     <template x-if="helpText === 'Searching...'">
-                        {% include "search/spinner.html" %}
+                        {% include "admin_site_search/spinner.html" %}
                     </template>
-                    {% include "search/results.html" %}
+                    {% include "admin_site_search/results.html" %}
                 </div>
             </div>
         </div>
