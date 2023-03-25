@@ -15,9 +15,9 @@ ELEMENTS_CUSTOM = [
     '<button id="search-site-button"',
 ]
 
-# presence confirms that the default header is still loaded, and not overridden
+# presence confirms that existing elements are still loaded, and not overridden
 ELEMENT_HEADER = '<a href="/admin/">Django administration</a>'
-# presence confirms that the default "user tools" are still loaded, and not overridden
+ELEMENT_FOOTER = '<div id="footer">'
 ELEMENT_USER_TOOL = '<div id="user-tools">'
 
 
@@ -40,6 +40,7 @@ def test_authenticated(client_super_admin, view_name):
         assert element in content
 
     assert ELEMENT_HEADER in content
+    assert ELEMENT_FOOTER in content
     assert ELEMENT_USER_TOOL in content
 
 
@@ -51,6 +52,7 @@ def test_popup(client_super_admin):
         assert element not in content
 
     assert ELEMENT_HEADER not in content
+    assert ELEMENT_FOOTER in content
     assert ELEMENT_USER_TOOL not in content
 
 
@@ -63,6 +65,7 @@ def test_login(client_super_admin):
         assert element not in content
 
     assert ELEMENT_HEADER in content
+    assert ELEMENT_FOOTER in content
     assert ELEMENT_USER_TOOL not in content
 
 
@@ -74,4 +77,5 @@ def test_logout(client_super_admin):
         assert element not in content
 
     assert ELEMENT_HEADER in content
+    assert ELEMENT_FOOTER in content
     assert ELEMENT_USER_TOOL not in content

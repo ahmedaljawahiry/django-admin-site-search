@@ -20,7 +20,7 @@ A global/site search modal for the Django admin.
 ## Requirements
 
 - Python 3.8 - 3.11.
-- Django 4.0 - 4.1.
+- Django 3.2 - 4.1.
 
 ## Setup
 
@@ -45,7 +45,7 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 ### 3. Add Templates
 
 1. If you haven't already, create `admin/base_site.html` in your `templates/` directory.
-2. Include the `admin_site_search` templates, in the blocks:
+2. Include the `admin_site_search` templates:
 ```html
 {% extends "admin/base_site.html" %}
 
@@ -54,7 +54,7 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     {{ block.super }}
 {% endblock %}
 
-{% block header %}
+{% block footer %}
     {{ block.super }}
     {% include 'admin_site_search/modal.html' %}
 {% endblock %}
@@ -71,6 +71,9 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
   - This is the only external dependency.
 - Search is implemented with basic `icontains`/`in` logic. Full-text search is out-of-scope.
 - Methods in `AdminSiteSearchView`; such as `match_model`, `match_objects`, etc. can be extended to add any custom logic. 
+- The placement of `modal.html` and `button.html` are not strict, though the former would ideally be in a top-level
+position. 
+  - Django 4.x exposes `{% block header %}` - this is preferable to `footer`.
 
 ## Screenshots
 <img src="images/desktop-light-open.png" width="100%" alt="Desktop, light theme, modal open" />

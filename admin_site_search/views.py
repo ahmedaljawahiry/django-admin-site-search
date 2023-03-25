@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from django.apps import apps
 from django.db.models import CharField, Field, Model, Q, QuerySet, TextField
 from django.http import JsonResponse
 from django.urls import path
@@ -50,8 +51,11 @@ class AdminSiteSearchView:
                     # user has no permission to view this model, so skip
                     continue
 
-                fields = model["model"]._meta.get_fields()
-                objects = self.match_objects(query, model["model"], fields)
+                model_class = model.get(  # model class added to dict in django 4.x
+                    "model", apps.get_model(app["app_label"], model["object_name"])
+                )
+                fields = model_class._meta.get_fields()
+                objects = self.match_objects(query, model_class, fields)
 
                 # haven't matched any objects, or model names, so skip
                 if not objects and not self.match_model(
