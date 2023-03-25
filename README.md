@@ -15,16 +15,62 @@ A global/site search modal for the Django admin.
 - ⚡ Results appear on-type, with throttling/debouncing to avoid excessive requests.
 - 🎹 Keyboard navigation (cmd+k, up/down, enter).
 - ✨ Responsive, and supports dark/light mode.
-  - Built-in CSS vars used to match your admin theme.
+  - Uses Django's built-in CSS vars to match your admin theme.
 
 ## Requirements
 
 - Python 3.8 - 3.11.
 - Django 4.0 - 4.1.
 
-## Installation
+## Setup
 
-TODO
+### 1. Install
+
+1. Install with your package manager, e.g. `pip install django-admin-site-search`.
+2. Add `admin_site_search` to your `INSTALLED_APPS` setting.
+
+### 2. Add View
+
+1. If you haven't already, [override/extend the default AdminSite](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/#overriding-the-default-admin-site).
+2. Add the `AdminSiteSearchView` to your AdminSite:
+```python
+from django.contrib import admin
+
+from admin_site_search.views import AdminSiteSearchView
+
+class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
+    ...
+```
+
+### 3. Add Templates
+
+1. If you haven't already, create `admin/base_site.html` in your `templates/` directory.
+2. Include the `admin_site_search` templates, in the blocks:
+```html
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}
+    {% include 'admin_site_search/head.html' %}
+    {{ block.super }}
+{% endblock %}
+
+{% block header %}
+    {{ block.super }}
+    {% include 'admin_site_search/modal.html' %}
+{% endblock %}
+
+{% block usertools %}
+    {% include 'admin_site_search/button.html' %}
+    {{ block.super }}
+{% endblock %}
+```
+
+## Notes
+
+- Along with styles, the `admin_site_search/head.html` loads [Alpine JS](https://alpinejs.dev). 
+  - This is the only external dependency.
+- Search is implemented with basic `icontains`/`in` logic. Full-text search is out-of-scope.
+- Methods in `AdminSiteSearchView`; such as `match_model`, `match_objects`, etc. can be extended to add any custom logic. 
 
 ## Screenshots
 <img src="images/desktop-light-open.png" width="100%" alt="Desktop, light theme, modal open" />
