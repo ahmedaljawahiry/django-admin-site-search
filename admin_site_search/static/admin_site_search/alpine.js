@@ -30,6 +30,8 @@ document.addEventListener('alpine:init', () => {
      * State/functions for performing searches.
      */
     Alpine.data('siteSearch', () => {
+        const adminPath = window.location.pathname.split('/')[1] ||  '';
+        const adminSearchPath = adminPath ? `/${adminPath}/search/` : '/search';
         const minChars = 2;
         const resultsEmpty = { apps: [] };
 
@@ -51,10 +53,10 @@ document.addEventListener('alpine:init', () => {
              */
             results: resultsEmpty,
             /**
-             * Fetch search results from /admin/search/.
+             * Fetch search results from /<admin_path>/search/.
              */
             async fetchResults() {
-                const response = await fetch(`/admin/search/?q=${this.value}`);
+                const response = await fetch(`${adminSearchPath}?q=${this.value}`);
                 return await response.json();
             },
             /**
@@ -82,7 +84,7 @@ document.addEventListener('alpine:init', () => {
                             this.helpText = `No results for "${this.value}"`;
                         }
                     } catch (e) {
-                        this.helpText = 'An unexpected error occurred'
+                        this.helpText = 'An unexpected error occurred';
                         console.error(e);
                     }
                 }
@@ -94,9 +96,9 @@ document.addEventListener('alpine:init', () => {
                 this.results = resultsEmpty;
                 if (this.value.length > 0) {
                     if (this.value.length < minChars) {
-                        this.helpText = `Enter ${minChars} or more characters...`
+                        this.helpText = `Enter ${minChars} or more characters...`;
                     } else {
-                        this.helpText = "Searching..."
+                        this.helpText = "Searching...";
                     }
                 }
             },
