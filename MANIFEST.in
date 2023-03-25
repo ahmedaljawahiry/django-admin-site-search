@@ -2,3 +2,6 @@ include LICENSE
 include README.md
 recursive-include admin_site_search/static *
 recursive-include admin_site_search/templates *
+
+recursive-exclude dev *
+recursive-exclude tests *
