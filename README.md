@@ -2,7 +2,7 @@
 
 A global/site search modal for the Django admin.
 
-![Preview/demo](images/demo.gif "Preview/demo")
+<img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/demo.gif" width="100%" alt="Preview/demo GIF" />
 
 ## Features
 
@@ -33,6 +33,7 @@ A global/site search modal for the Django admin.
 
 1. If you haven't already, [override/extend the default AdminSite](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/#overriding-the-default-admin-site).
 2. Add the `AdminSiteSearchView` to your AdminSite:
+
 ```python
 from django.contrib import admin
 
@@ -76,8 +77,8 @@ position.
   - Django 4.x exposes `{% block header %}` - this is preferable to `footer`.
 
 ## Screenshots
-<img src="images/desktop-light-open.png" width="100%" alt="Desktop, light theme, modal open" />
+<img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/desktop-light-open.png" width="100%" alt="Desktop, light theme, modal open" />
 <p>
-  <img src="images/mobile-light-closed.png" width="45%" alt="Mobile, light theme, modal closed" />
-  <img src="images/mobile-dark-open.png" width="45%" alt="Mobile, dark theme, modal open" /> 
+  <img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/mobile-light-closed.png" width="45%" alt="Mobile, light theme, modal closed" />
+  <img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/mobile-dark-open.png" width="45%" alt="Mobile, dark theme, modal open" /> 
 </p>
