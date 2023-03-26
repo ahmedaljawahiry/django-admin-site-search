@@ -10,7 +10,7 @@ A global/site search modal for the Django admin.
 - 🔎 Search performed on:
   - App labels.
   - Model labels and field attributes.
-  - CharField values (with `__icontains`).
+  - `CharField` values (with `__icontains`).
     - Subclasses also included: `SlugField`, `URLField`, etc.
 - 🔒 Built-in auth: users can only search apps and models that they have permission to view.
 - ⚡ Results appear on-type, with throttling/debouncing to avoid excessive requests.
@@ -37,7 +37,6 @@ A global/site search modal for the Django admin.
 
 ```python
 from django.contrib import admin
-
 from admin_site_search.views import AdminSiteSearchView
 
 class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
@@ -106,6 +105,11 @@ def filter_field(self, query: str, field: Field) -> Optional[Q]:
 **Add `TextField` results to search.**
 
 ```python
+from django.contrib import admin
+from django.db.models import Q, Field, TextField
+from admin_site_search.views import AdminSiteSearchView
+
+
 class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     ...  
   
