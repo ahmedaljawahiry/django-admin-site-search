@@ -9,13 +9,14 @@ A global/site search modal for the Django admin.
 - 🎩 Works out-of-the-box, with minimal config.
 - 🔎 Search performed on:
   - App labels.
-  - Model labels and fields.
-  - Object Char and Text fields (with `__icontains`).
+  - Model labels and field attributes.
+  - CharField values (with `__icontains`).
+    - Subclasses also included: `SlugField`, `URLField`, etc.
 - 🔒 Built-in auth: users can only search apps and models that they have permission to view.
 - ⚡ Results appear on-type, with throttling/debouncing to avoid excessive requests.
 - 🎹 Keyboard navigation (cmd+k, up/down, enter).
 - ✨ Responsive, and supports dark/light mode.
-  - Uses Django's built-in CSS vars to match your admin theme.
+  - Django's built-in CSS vars are used to match your admin theme.
 
 ## Requirements
 
@@ -66,15 +67,58 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 {% endblock %}
 ```
 
-## Notes
+#### Notes
 
 - Along with styles, `admin_site_search/head.html` loads [Alpine JS](https://alpinejs.dev). 
   - This is bundled into `/static/`, to avoid external dependencies.
-- Search is implemented with basic `icontains`/`in` logic. Full-text search is out-of-scope.
-- Methods in `AdminSiteSearchView`; such as `match_model`, `match_objects`, etc. can be extended to add any custom logic. 
 - The placement of `modal.html` and `button.html` are not strict, though the former would ideally be in a top-level
 position. 
   - Django 4.x exposes `{% block header %}` - this is preferable to `footer`.
+
+## Customisation
+
+Methods in `AdminSiteSearchView` can be extended to add custom logic.
+
+```python 
+def match_app(self, query: str, name: str) -> bool:
+    """DEFAULT: case-insensitive match the app name"""
+    ...
+
+def match_model(
+    self, query: str, name: str, object_name: str, fields: List[Field]
+) -> bool:
+    """DEFAULT: case-insensitive match the model and field attributes"""
+    ...
+
+def match_objects(
+    self, query: str, model_class: Model, model_fields: List[Field]
+) -> QuerySet:
+    """DEFAULT: Returns the QuerySet after performing an OR filter across all Char fields in the model."""
+    ...
+
+def filter_field(self, query: str, field: Field) -> Optional[Q]:
+    """DEFAULT: Returns a Q 'icontains' filter for Char fields, otherwise None"""
+    ...
+```
+
+### Example
+
+**Add `TextField` results to search.**
+
+```python
+class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
+    ...  
+  
+    def filter_field(self, query: str, field: Field) -> Optional[Q]:
+        """Extends super() to add TextField support to site search"""
+        if isinstance(field, TextField):
+            return Q(**{f"{field.name}__icontains": query})
+        return super().filter_field(query, field)
+```
+
+Note that this isn't done by default for performance reasons: `__icontains` on a 
+large number of text entries is inefficient.
+
 
 ## Screenshots
 <img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/desktop-light-open.png" width="100%" alt="Desktop, light theme, modal open" />

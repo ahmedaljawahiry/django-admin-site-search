@@ -69,15 +69,11 @@ def test_models(client_super_admin, query, results_expected):
         ("one two", []),
         ("slug-key", ["obj-one", "obj-two"]),
         ("two.com", ["obj-two"]),
-        ("text", ["obj-one", "obj-two"]),
+        ("Text", []),
     ],
 )
 def test_objects(client_super_admin, query, results_expected):
-    """Verify 'contains' and case-insensitive matches are applied to:
-    - Char fields,
-    - Text fields."""
-    """Verify object CharFields and TextFields are matched: 'contains'
-    and case-insensitive. Other fields are not matched."""
+    """Verify object CharFields are matched: 'contains' and case-insensitive. Other fields are not matched."""
     for i, n in enumerate(["obj-one", "obj-two"], start=999):
         TeamFactory(
             id=i,
