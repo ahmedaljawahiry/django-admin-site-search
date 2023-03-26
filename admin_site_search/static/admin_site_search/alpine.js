@@ -12,10 +12,11 @@ document.addEventListener('alpine:init', () => {
      * Capture keyboard events to toggle search modal.
      */
     document.addEventListener('keydown', (event) => {
-      if (event.metaKey && event.key === 'k') {
-          Alpine.store('search').toggle()
+      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+          Alpine.store('search').toggle();
+          event.preventDefault();
       } else if (event.key === 'Escape') {
-          Alpine.store('search').close()
+          Alpine.store('search').close();
       }
     });
 

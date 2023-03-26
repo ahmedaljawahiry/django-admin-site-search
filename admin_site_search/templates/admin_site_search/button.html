@@ -1,13 +1,14 @@
 {% if not is_popup and request.user.is_authenticated %}
     <button id="search-site-button"
-            x-data
+            x-data="{ isMac: navigator.platform.indexOf('Mac') !== -1 }"
             @click="$store.search.toggle()"
             class="search-button"
             aria-label="search site">
         {% include "admin_site_search/icon.html" %}
         <span>Quick search...</span>
         <kbd>
-            <abbr title="Command">⌘</abbr>K
+            <abbr x-bind:title="isMac ? 'Command' : 'Control'"
+                  x-text="isMac ? '⌘' : 'Ctrl'">⌘</abbr>+ K
         </kbd>
     </button>
 {% endif %}
