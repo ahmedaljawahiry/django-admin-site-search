@@ -6,9 +6,9 @@ from django.urls import reverse
 
 # presence confirms that the package's templates have loaded correctly
 ELEMENTS_CUSTOM = [
-    '<script src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.11.1/dist/cdn.min.js" defer>',
-    '<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" defer>',
-    '<script src="/static/admin_site_search/alpine.js">',
+    '<script src="/static/admin_site_search/alpinejs/focus-3-12-0.min.js" defer>',
+    '<script src="/static/admin_site_search/alpinejs/3-12-0.min.js" defer>',
+    '<script src="/static/admin_site_search/search.js">',
     "[x-cloak] { display: none !important;}",
     '<link rel="stylesheet" href="/static/admin_site_search/style.css">',
     '<template x-data x-if="$store.search.isOpen">',

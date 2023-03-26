@@ -68,8 +68,8 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 
 ## Notes
 
-- Along with styles, the `admin_site_search/head.html` loads [Alpine JS](https://alpinejs.dev). 
-  - This is the only external dependency.
+- Along with styles, `admin_site_search/head.html` loads [Alpine JS](https://alpinejs.dev). 
+  - This is bundled into `/static/`, to avoid external dependencies.
 - Search is implemented with basic `icontains`/`in` logic. Full-text search is out-of-scope.
 - Methods in `AdminSiteSearchView`; such as `match_model`, `match_objects`, etc. can be extended to add any custom logic. 
 - The placement of `modal.html` and `button.html` are not strict, though the former would ideally be in a top-level
