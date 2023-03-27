@@ -15,13 +15,13 @@ USE_I18N = True
 USE_TZ = True
 
 INSTALLED_APPS = [
-    "dev.admin.CustomAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "dev.football.core",
+    "dev.admin.CustomAdminConfig",
     "dev.football.players",
     "dev.football.stadiums",
     "dev.football.teams",

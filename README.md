@@ -46,6 +46,7 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 ### 3. Add Templates
 
 1. If you haven't already, create `admin/base_site.html` in your `templates/` directory.
+   - Note: if your `templates/` directory is inside of an app, then that app must appear in `INSTALLED_APPS` _before_ your custom admin app.
 2. Include the `admin_site_search` templates:
 ```html
 {% extends "admin/base_site.html" %}
