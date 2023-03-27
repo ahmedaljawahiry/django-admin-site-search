@@ -1,5 +1,12 @@
 # django-admin-site-search
 
+[![PyPI version](https://img.shields.io/pypi/v/django-admin-site-search.svg)](https://pypi.org/project/django-admin-site-search/)
+[![Downloads](https://static.pepy.tech/badge/django-admin-site-search)](https://pepy.tech/project/django-admin-site-search)
+[![PyPI license](https://img.shields.io/pypi/l/django-admin-site-search.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/blob/main/LICENSE)
+[![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logoColor=white)](https://pre-commit.com)
+
+
 A global/site search modal for the Django admin.
 
 <img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/demo.gif" width="100%" alt="Preview/demo GIF" />
