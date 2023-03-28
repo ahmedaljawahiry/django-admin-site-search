@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from django.apps import apps
+from django.conf import settings
 from django.db.models import CharField, Field, Model, Q, QuerySet
 from django.http import JsonResponse
 from django.urls import path
@@ -27,10 +28,13 @@ class AdminSiteSearchView:
 
         results = {"apps": []}
         counts = {"apps": 0, "models": 0, "objects": 0}
+        errors = []
 
         if not query:
             # missing query, so return empty results
-            return JsonResponse({"results": results, "counts": counts})
+            return JsonResponse(
+                {"results": results, "counts": counts, "errors": errors}
+            )
 
         # same app list used to create the admin page for a user
         app_list = self.get_app_list(request)
@@ -44,53 +48,67 @@ class AdminSiteSearchView:
             }
 
             for model in app["models"]:
-                can_view = model["perms"]["view"]
-                can_add = model["perms"]["add"]
+                try:
+                    can_view = model["perms"]["view"]
+                    can_add = model["perms"]["add"]
 
-                if not can_view:
-                    # user has no permission to view this model, so skip
-                    continue
+                    if not can_view:
+                        # user has no permission to view this model, so skip
+                        continue
 
-                model_class = self.get_model_class(app["app_label"], model)
-                if not model_class:
-                    # unable to retrieve model class, so skip
-                    continue
+                    model_class = self.get_model_class(app["app_label"], model)
+                    if not model_class:
+                        # unable to retrieve model class, so skip
+                        continue
 
-                fields = model_class._meta.get_fields()
-                objects = self.match_objects(query, model_class, fields)
+                    fields = model_class._meta.get_fields()
+                    objects = self.match_objects(query, model_class, fields)
 
-                # haven't matched any objects, or model names, so skip
-                if not objects and not self.match_model(
-                    query, model["name"], model["object_name"], fields
-                ):
-                    continue
+                    # haven't matched any objects, or model names, so skip
+                    if not objects and not self.match_model(
+                        query, model["name"], model["object_name"], fields
+                    ):
+                        continue
 
-                model_result = {
-                    "id": f"{app['app_label']}.{model['object_name']}",
-                    "name": model["name"],
-                    "url": model["admin_url"],
-                    "url_add": model["add_url"] if can_add else None,
-                    "objects": [],
-                }
-
-                for obj in objects:
-                    object_result = {
-                        "id": str(obj.pk),
-                        "name": str(obj),
-                        "url": f"{model['admin_url']}{obj.pk}",
+                    model_result = {
+                        "id": f"{app['app_label']}.{model['object_name']}",
+                        "name": model["name"],
+                        "url": model["admin_url"],
+                        "url_add": model["add_url"] if can_add else None,
+                        "objects": [],
                     }
-                    model_result["objects"].append(object_result)
-                    counts["objects"] += 1
 
-                app_result["models"].append(model_result)
-                counts["models"] += 1
+                    for obj in objects:
+                        object_result = {
+                            "id": str(obj.pk),
+                            "name": str(obj),
+                            "url": f"{model['admin_url']}{obj.pk}",
+                        }
+                        model_result["objects"].append(object_result)
+                        counts["objects"] += 1
+
+                    app_result["models"].append(model_result)
+                    counts["models"] += 1
+                except Exception as ex:
+                    # except/skip to avoid unexpected issues with one model preventing any results
+                    # from being returned - log the error client-side instead (not in production)
+                    if settings.DEBUG:
+                        errors.append(
+                            {
+                                "error": repr(ex),
+                                "error_message": str(ex),
+                                "app": app["app_label"],
+                                "model": model["object_name"],
+                            }
+                        )
+                    continue
 
             # we've matched some models or objects, or the app name
             if app_result["models"] or self.match_app(query, app["name"]):
                 results["apps"].append(app_result)
                 counts["apps"] += 1
 
-        return JsonResponse({"results": results, "counts": counts})
+        return JsonResponse({"results": results, "counts": counts, "errors": errors})
 
     def match_app(self, query: str, name: str) -> bool:
         """Case-insensitive match the app name"""

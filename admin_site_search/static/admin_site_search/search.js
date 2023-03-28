@@ -77,6 +77,10 @@ document.addEventListener('alpine:init', () => {
                         const countModels = data.counts.models;
                         const countObjects = data.counts.objects;
 
+                        if (data.errors?.length > 0) {
+                            console.warn('Errors occurred during search', data.errors);
+                        }
+
                         if (countApps > 0 || countModels > 0 || countObjects > 0) {
                             this.helpText = `Showing ${pluralise('app', countApps)}, 
                             ${pluralise('model', countModels)}, 
