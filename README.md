@@ -1,11 +1,14 @@
 # django-admin-site-search
 
+[![Test](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml/badge.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml)
+[![Lint](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/lint.yaml/badge.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/lint.yaml)
+[![Coverage Python](https://img.shields.io/badge/coverage%20(.py)-100%25-brightgreen.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml)
+[![Coverage Javascript](https://img.shields.io/badge/coverage%20(.js)-WIP-orange.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/issues/5)
+[![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Pre-Commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logoColor=white)](https://github.com/ahmedaljawahiry/django-admin-site-search/blob/main/.pre-commit-config.yaml)
 [![PyPI version](https://img.shields.io/pypi/v/django-admin-site-search.svg)](https://pypi.org/project/django-admin-site-search/)
 [![Downloads](https://static.pepy.tech/badge/django-admin-site-search)](https://pepy.tech/project/django-admin-site-search)
 [![PyPI license](https://img.shields.io/pypi/l/django-admin-site-search.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/blob/main/LICENSE)
-[![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Code style](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logoColor=white)](https://pre-commit.com)
-
 
 A global/site search modal for the Django admin.
 
