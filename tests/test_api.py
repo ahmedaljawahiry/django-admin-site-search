@@ -1,6 +1,9 @@
 """Tests verify the API response"""
 from unittest.mock import patch
 
+from django.apps import apps
+from django.test import override_settings
+
 from admin_site_search.views import AdminSiteSearchView
 from dev.football.core.factories import GroupFactory
 from dev.football.players.factories import PlayerAttributesFactory, PlayerFactory
@@ -15,9 +18,10 @@ def test_empty(client_admin):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
+    assert len(data.keys()) == 3
     assert data["results"] == {"apps": []}
     assert data["counts"] == {"apps": 0, "models": 0, "objects": 0}
+    assert not data["errors"]
 
 
 def test_apps(client_super_admin):
@@ -26,7 +30,7 @@ def test_apps(client_super_admin):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
+    assert len(data.keys()) == 3
     assert data["results"] == {
         "apps": [
             {
@@ -38,6 +42,7 @@ def test_apps(client_super_admin):
         ]
     }
     assert data["counts"] == {"apps": 1, "models": 0, "objects": 0}
+    assert not data["errors"]
 
 
 def test_models(client_super_admin):
@@ -46,7 +51,6 @@ def test_models(client_super_admin):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
     assert data["results"] == {
         "apps": [
             {
@@ -66,6 +70,7 @@ def test_models(client_super_admin):
         ]
     }
     assert data["counts"] == {"apps": 1, "models": 1, "objects": 0}
+    assert not data["errors"]
 
 
 def test_model_class_none(client_super_admin):
@@ -80,7 +85,6 @@ def test_model_class_none(client_super_admin):
         data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
     assert data["results"] == {
         "apps": [
             {
@@ -92,6 +96,7 @@ def test_model_class_none(client_super_admin):
         ]
     }
     assert data["counts"] == {"apps": 1, "models": 0, "objects": 0}
+    assert not data["errors"]
 
 
 def test_objects(client_super_admin):
@@ -102,7 +107,6 @@ def test_objects(client_super_admin):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
     assert data["results"] == {
         "apps": [
             {
@@ -128,6 +132,7 @@ def test_objects(client_super_admin):
         ]
     }
     assert data["counts"] == {"apps": 1, "models": 1, "objects": 1}
+    assert not data["errors"]
 
 
 def test_objects_one_to_one_pk(client_super_admin):
@@ -139,7 +144,6 @@ def test_objects_one_to_one_pk(client_super_admin):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
     assert data["results"] == {
         "apps": [
             {
@@ -165,6 +169,7 @@ def test_objects_one_to_one_pk(client_super_admin):
         ]
     }
     assert data["counts"] == {"apps": 1, "models": 1, "objects": 1}
+    assert not data["errors"]
 
 
 def test_counts(client_super_admin):
@@ -179,8 +184,8 @@ def test_counts(client_super_admin):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
     assert data["counts"] == {"apps": 3, "models": 3, "objects": 4}
+    assert not data["errors"]
 
 
 def test_limit(client_super_admin):
@@ -192,6 +197,78 @@ def test_limit(client_super_admin):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data.keys()) == 2
     assert len(data["results"]["apps"][0]["models"][0]["objects"]) == 5
     assert data["counts"] == {"apps": 1, "models": 1, "objects": 5}
+    assert not data["errors"]
+
+
+@override_settings(DEBUG=True)
+def test_errors_on(client_super_admin):
+    """Verify errors that occur on-or-below the "model" level are skipped, and - if DEBUG=True - included
+    in the response"""
+    team = TeamFactory(name="Arsenal")
+    StadiumFactory(name="Arsenal Stadium")
+
+    def error_if_stadium(app_label, model_dict):
+        """Fails for the Stadium model, default otherwise"""
+        if model_dict["object_name"] == "Stadium":
+            raise Exception("A test error occurred")
+        else:
+            return apps.get_model(app_label, model_dict["object_name"])
+
+    with patch.object(AdminSiteSearchView, "get_model_class") as get_model_class:
+        get_model_class.side_effect = error_if_stadium
+
+        response = request_search(client_super_admin, query="Arsenal")
+        data = response.json()
+
+    assert response.status_code == 200
+    assert len(data.keys()) == 3
+    assert data["results"] == {
+        "apps": [
+            {
+                "id": "teams",
+                "name": "Teams",
+                "url": "/admin/teams/",
+                "models": [
+                    {
+                        "id": "teams.Team",
+                        "name": "Teams",
+                        "url": "/admin/teams/team/",
+                        "url_add": "/admin/teams/team/add/",
+                        "objects": [
+                            {
+                                "id": str(team.pk),
+                                "name": str(team),
+                                "url": f"/admin/teams/team/{team.pk}",
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    assert data["counts"] == {"apps": 1, "models": 1, "objects": 1}
+    assert len(data["errors"]) == 1
+    assert data["errors"][0] == {
+        "error": "Exception('A test error occurred')",
+        "error_message": "A test error occurred",
+        "app": "stadiums",
+        "model": "Stadium",
+    }
+
+
+@override_settings(DEBUG=False)
+def test_errors_off(client_super_admin):
+    """Verify errors are skipped, but not included in the response, if DEBUG=False"""
+    with patch.object(AdminSiteSearchView, "get_model_class") as get_model_class:
+        # everything will fail
+        get_model_class.side_effect = Exception
+
+        response = request_search(client_super_admin, query="not good")
+        data = response.json()
+
+    assert response.status_code == 200
+    assert data["results"] == {"apps": []}
+    assert data["counts"] == {"apps": 0, "models": 0, "objects": 0}
+    assert not data["errors"]
