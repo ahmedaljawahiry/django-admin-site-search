@@ -109,6 +109,10 @@ def match_objects(
 def filter_field(self, query: str, field: Field) -> Optional[Q]:
     """DEFAULT: Returns a Q 'icontains' filter for Char fields, otherwise None"""
     ...
+
+def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
+    """DEFAULT: Retrieve the model class from the dict created by admin.AdminSite"""
+    ...
 ```
 
 ### Example
