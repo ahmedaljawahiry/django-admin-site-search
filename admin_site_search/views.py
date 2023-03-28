@@ -50,6 +50,9 @@ class AdminSiteSearchView:
                 if not can_view:
                     # user has no permission to view this model, so skip
                     continue
+                # Package is not compatible with Django Constance yet
+                if app["app_label"] == "constance":
+                    continue
 
                 model_class = model.get(  # model class added to dict in django 4.x
                     "model", apps.get_model(app["app_label"], model["object_name"])
