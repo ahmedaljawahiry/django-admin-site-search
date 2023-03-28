@@ -51,9 +51,11 @@ class AdminSiteSearchView:
                     # user has no permission to view this model, so skip
                     continue
 
-                model_class = model.get(  # model class added to dict in django 4.x
-                    "model", apps.get_model(app["app_label"], model["object_name"])
-                )
+                model_class = self.get_model_class(app["app_label"], model)
+                if not model_class:
+                    # unable to retrieve model class, so skip
+                    continue
+
                 fields = model_class._meta.get_fields()
                 objects = self.match_objects(query, model_class, fields)
 
@@ -132,3 +134,16 @@ class AdminSiteSearchView:
         """Returns a Q 'icontains' filter for Char fields, otherwise None"""
         if isinstance(field, CharField):
             return Q(**{f"{field.name}__icontains": query})
+
+    def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
+        """Retrieve the model class from the dict created by admin.AdminSite, which (by default) contains:
+        - "model": the class instance (only available in Django 4.x),
+        - "name": capitalised verbose_name_plural,
+        - "object_name": the class name,
+        - "perms": dict of user permissions for this model,
+        - other (e.g. url) fields."""
+        model_class = model_dict.get("model")
+        if not model_class:
+            # model_dict["model"] only available in django 4.x
+            model_class = apps.get_model(app_label, model_dict["object_name"])
+        return model_class

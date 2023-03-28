@@ -1,4 +1,7 @@
 """Tests verify the API response"""
+from unittest.mock import patch
+
+from admin_site_search.views import AdminSiteSearchView
 from dev.football.core.factories import GroupFactory
 from dev.football.players.factories import PlayerAttributesFactory, PlayerFactory
 from dev.football.stadiums.factories import StadiumFactory
@@ -63,6 +66,32 @@ def test_models(client_super_admin):
         ]
     }
     assert data["counts"] == {"apps": 1, "models": 1, "objects": 0}
+
+
+def test_model_class_none(client_super_admin):
+    """Verify models for which no class is found, are skipped.
+
+    Context: some packages register unexpected config with the admin,
+    e.g. https://github.com/ahmedaljawahiry/django-admin-site-search/issues/6"""
+    with patch.object(AdminSiteSearchView, "get_model_class") as get_model_class:
+        get_model_class.return_value = None
+
+        response = request_search(client_super_admin, query="stadium")
+        data = response.json()
+
+    assert response.status_code == 200
+    assert len(data.keys()) == 2
+    assert data["results"] == {
+        "apps": [
+            {
+                "id": "stadiums",
+                "name": "Stadiums",
+                "url": "/admin/stadiums/",
+                "models": [],
+            }
+        ]
+    }
+    assert data["counts"] == {"apps": 1, "models": 0, "objects": 0}
 
 
 def test_objects(client_super_admin):
