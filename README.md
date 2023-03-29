@@ -2,6 +2,7 @@
 
 [![Test](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml/badge.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml)
 [![Lint](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/lint.yaml/badge.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/lint.yaml)
+[![PyPI](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/pypi.yaml/badge.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/pypi.yaml)
 [![Coverage Python](https://img.shields.io/badge/coverage%20(.py)-100%25-brightgreen.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml)
 [![Coverage Javascript](https://img.shields.io/badge/coverage%20(.js)-WIP-orange.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/issues/5)
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
