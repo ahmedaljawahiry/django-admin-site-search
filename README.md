@@ -32,7 +32,7 @@ A global/site search modal for the Django admin.
 ## Requirements
 
 - Python 3.7 - 3.11.
-- Django 3.2 - 4.1.
+- Django 3.2 - 4.2.
 
 ## Setup
 
