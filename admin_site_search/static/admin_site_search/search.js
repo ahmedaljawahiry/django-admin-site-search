@@ -32,7 +32,7 @@ document.addEventListener('alpine:init', () => {
      */
     Alpine.data('siteSearch', () => {
         const adminPath = window.location.pathname.split('/')[1] ||  '';
-        const adminSearchPath = adminPath ? `/${adminPath}/search/` : '/search';
+        const adminSearchPath = adminPath ? `/${adminPath}/search/` : '/search/';
         const minChars = 2;
         const resultsEmpty = { apps: [] };
 
