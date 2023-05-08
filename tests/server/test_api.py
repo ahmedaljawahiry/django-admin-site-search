@@ -1,4 +1,4 @@
-"""Tests verify the API response"""
+"""Tests verifying the API response"""
 from unittest.mock import patch
 
 from django.apps import apps
