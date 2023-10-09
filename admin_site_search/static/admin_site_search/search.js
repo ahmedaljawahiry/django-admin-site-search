@@ -28,11 +28,27 @@ document.addEventListener('alpine:init', () => {
     }
 
     /**
+     * Retrieves the admin search path from the script element's data-search-path attribute.
+     *
+     * This method allows us to reverse admin:index in the template.
+     */
+    function getSearchPath() {
+        const scriptElement = document.getElementById('admin-site-search-script');
+
+        let path = scriptElement?.dataset.searchPath;
+        if (!path) {
+            path = "/admin/search/";
+            console.warn("admin-site-search", `Failed to detect admin search path (default=${path})`);
+        }
+
+        return path;
+    }
+
+    /**
      * State/functions for performing searches.
      */
     Alpine.data('siteSearch', () => {
-        const adminPath = window.location.pathname.split('/')[1] ||  '';
-        const adminSearchPath = adminPath ? `/${adminPath}/search/` : '/search/';
+        const adminSearchPath = getSearchPath();
         const minChars = 2;
         const resultsEmpty = { apps: [] };
 
@@ -90,7 +106,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     } catch (e) {
                         this.helpText = 'An unexpected error occurred';
-                        console.error(e);
+                        console.error("admin-site-search", e);
                     }
                 }
             },

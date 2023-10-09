@@ -2,7 +2,7 @@
 {% if not is_popup and request.user.is_authenticated %}
     <script src="{% static 'admin_site_search/alpinejs/focus-3-12-0.min.js' %}" defer></script>
     <script src="{% static 'admin_site_search/alpinejs/3-12-0.min.js' %}" defer></script>
-    <script src="{% static 'admin_site_search/search.js' %}"></script>
+    <script src="{% static 'admin_site_search/search.js' %}" id="admin-site-search-script" data-search-path="{% url 'admin:index' %}search/"></script>
     <link rel="stylesheet" href="{% static 'admin_site_search/style.css' %}">
     <style>
         {# Prevent "Alpine flash": https://ryangjchandler.co.uk/posts/hiding-elements-until-alpine-is-ready-with-x-cloak#}
