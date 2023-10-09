@@ -14,6 +14,7 @@ class AdminSiteSearchView:
         """Extends super()'s urls, to include search/"""
         urlpatterns = super().get_urls()
 
+        # todo: make "search/" configurable
         search = path("search/", self.admin_view(self.search), name="search")
         # avoid append(), to keep the "catch_all_view" last
         urlpatterns.insert(0, search)

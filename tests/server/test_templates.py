@@ -8,7 +8,7 @@ from django.urls import reverse
 ELEMENTS_CUSTOM = [
     '<script src="/static/admin_site_search/alpinejs/focus-3-12-0.min.js" defer>',
     '<script src="/static/admin_site_search/alpinejs/3-12-0.min.js" defer>',
-    '<script src="/static/admin_site_search/search.js">',
+    '<script src="/static/admin_site_search/search.js',
     "[x-cloak] { display: none !important;}",
     '<link rel="stylesheet" href="/static/admin_site_search/style.css">',
     '<template x-data x-if="$store.search.isOpen">',
