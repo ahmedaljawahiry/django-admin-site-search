@@ -54,6 +54,10 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     ...
 ```
 
+By default, the search route is at `<admin_path>/search/`. The last part can be changed by overriding 
+the `site_search_path` class variable in your admin site.
+
+
 ### 3. Add Templates
 
 1. If you haven't already, create `admin/base_site.html` in your `templates/` directory.
