@@ -4,6 +4,8 @@ import re
 from django.test import Client, override_settings
 from django.urls import reverse
 
+from admin_site_search.views import AdminSiteSearchView
+
 
 def request_script_element(client: Client):
     """Requests admin:index, then parses the content for the search.js script element. This should
@@ -43,3 +45,12 @@ def test_index(client_super_admin):
 
     assert 'id="admin-site-search-script"' in element
     assert 'data-search-path="/search/"' in element
+
+
+def test_path_attr():
+    """Verify that the AdminSiteSearchView has a "site_search_path", which is used to generate
+    the search route"""
+
+    # basic assertions to avoid crazy patches - this is more of a sanity test to prevent API breakages
+    assert hasattr(AdminSiteSearchView, "site_search_path")
+    assert reverse("admin:site-search").endswith(AdminSiteSearchView.site_search_path)

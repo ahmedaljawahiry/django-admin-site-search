@@ -10,13 +10,16 @@ from django.urls import path
 class AdminSiteSearchView:
     """Adds a search/ view, to the admin site"""
 
+    site_search_path = "search/"
+
     def get_urls(self):
         """Extends super()'s urls, to include search/"""
         urlpatterns = super().get_urls()
 
-        # todo: make "search/" configurable
-        search = path("search/", self.admin_view(self.search), name="site-search")
-        # avoid append(), to keep the "catch_all_view" last
+        search = path(
+            self.site_search_path, self.admin_view(self.search), name="site-search"
+        )
+        # avoid append() so that "catch_all_view" is last
         urlpatterns.insert(0, search)
 
         return urlpatterns
