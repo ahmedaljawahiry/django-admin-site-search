@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,13 +44,13 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Install dependencies
         run: pip install tox
       - name: Setup server
         run: |
-          tox --devenv venv-py311 -e py311-dj42
-          source venv-py311/bin/activate
+          tox --devenv venv-py312 -e py312-dj42
+          source venv-py312/bin/activate
           python dev/manage.py migrate
           python dev/manage.py testdata
           python dev/manage.py runserver &
@@ -66,7 +66,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Install dependencies
         run: python -m pip install --upgrade coverage
       - name: Download coverage
