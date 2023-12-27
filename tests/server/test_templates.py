@@ -22,10 +22,15 @@ ELEMENT_USER_TOOL = '<div id="user-tools">'
 
 
 def request_admin_content(
-    client: Client, view_name: str = "index", query_str: str = ""
+    client: Client,
+    view_name: str = "index",
+    query_str: str = "",
+    method: str = "get",
+    follow: bool = True,
 ) -> str:
     """Returns the response's content after GETing the admin site"""
-    response = client.get(f'{reverse(f"admin:{view_name}")}?{query_str}', follow=True)
+    path = reverse(f"admin:{view_name}")
+    response = getattr(client, method)(f"{path}?{query_str}", follow=follow)
     return str(response.content)
 
 
@@ -71,7 +76,9 @@ def test_login(client_super_admin):
 
 def test_logout(client_super_admin):
     """Verify that the elements are omitted from the logout page"""
-    content = request_admin_content(client_super_admin, "logout")
+    content = request_admin_content(
+        client_super_admin, "logout", method="post", follow=False
+    )
 
     for element in ELEMENTS_CUSTOM:
         assert element not in content
