@@ -28,7 +28,7 @@ class AdminSiteSearchView:
         """Returns a JsonResponse containing results from matching the "q" query parameter to
         application names, model names, and all instance CharFields. Only apps/models that the
         user has permission to view are searched."""
-        query = request.GET.get("q", "").lower()
+        query = request.GET.get("q", "")
 
         results = {"apps": []}
         counts = {"apps": 0, "models": 0, "objects": 0}
@@ -154,8 +154,9 @@ class AdminSiteSearchView:
 
     def filter_field(self, query: str, field: Field) -> Optional[Q]:
         """Returns a Q 'icontains' filter for Char fields, otherwise None"""
+        _query = query.lower()
         if isinstance(field, CharField):
-            return Q(**{f"{field.name}__icontains": query})
+            return Q(**{f"{field.name}__icontains": _query})
 
     def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
         """Retrieve the model class from the dict created by admin.AdminSite, which (by default) contains:
