@@ -1,5 +1,5 @@
 """Verify that overrideable functions, in the view, are invoked correctly"""
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import Permission, User
 from django.test import Client
@@ -12,13 +12,15 @@ from tests import request_search
 def request_with_patch(client: Client, user: User, method_name: str) -> MagicMock:
     """Requests a search, with the given method patched. The user is set up with access to the
     Team and Stadium models"""
-    permission_ids = Permission.objects.filter(codename__in=["view_team", "view_stadium"]).values_list(
-        "id", flat=True
-    )
+    permission_ids = Permission.objects.filter(
+        codename__in=["view_team", "view_stadium"]
+    ).values_list("id", flat=True)
     user.user_permissions.add(*permission_ids)
 
     # return_value=None works for now, but consider a relevant value per-method
-    with patch(f"dev.admin.CustomAdminSite.{method_name}", return_value=None) as patch_method:
+    with patch(
+        f"dev.admin.CustomAdminSite.{method_name}", return_value=None
+    ) as patch_method:
         request_search(client, query="QuEry")
 
     return patch_method
@@ -40,7 +42,12 @@ def test_match_model(client_admin, user_admin):
     call_args_list = [c[0] for c in patch_match_model.call_args_list]
 
     assert len(call_args_list) == 2
-    assert ("QuEry", "Stadiums", "Stadium", Stadium._meta.get_fields()) in call_args_list
+    assert (
+        "QuEry",
+        "Stadiums",
+        "Stadium",
+        Stadium._meta.get_fields(),
+    ) in call_args_list
     assert ("QuEry", "Teams", "Team", Team._meta.get_fields()) in call_args_list
 
 
