@@ -17,7 +17,8 @@ def request_with_patch(client: Client, user: User, method_name: str) -> MagicMoc
     )
     user.user_permissions.add(*permission_ids)
 
-    with patch(f"dev.admin.CustomAdminSite.{method_name}") as patch_method:
+    # return_value=None works for now, but consider a relevant value per-method
+    with patch(f"dev.admin.CustomAdminSite.{method_name}", return_value=None) as patch_method:
         request_search(client, query="QuEry")
 
     return patch_method
