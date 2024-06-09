@@ -73,7 +73,7 @@ document.addEventListener('alpine:init', () => {
              * Fetch search results from /<admin_path>/search/.
              */
             async fetchResults() {
-                const response = await fetch(`${adminSearchPath}?q=${this.value}`);
+                const response = await fetch(`${adminSearchPath}?q=${encodeURIComponent(this.value)}`);
                 return await response.json();
             },
             /**
