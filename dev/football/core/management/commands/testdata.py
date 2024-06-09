@@ -14,6 +14,7 @@ PASSWORD = "playwright-e2e-testing"
 
 TEAM_1 = "Playwright United FC"
 TEAM_2 = "Playwright City FC"
+TEAM_3 = "###,&&&"
 
 
 class Command(BaseCommand):
@@ -32,9 +33,9 @@ class Command(BaseCommand):
 
         # create the "fixed" test teams, unless they already exist
         self.stdout.write(f"Creating constant test teams...")
-        for name in [TEAM_1, TEAM_2]:
-            team = Team.objects.filter(name=name).first()
-            if not team:
+        for name in [TEAM_1, TEAM_2, TEAM_3]:
+            team_exists = Team.objects.filter(name=name).exists()
+            if not team_exists:
                 TeamFactory(name=name)
                 self.stdout.write(self.style.SUCCESS(f'Created team "{name}"'))
             else:
