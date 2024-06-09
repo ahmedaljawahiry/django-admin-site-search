@@ -137,3 +137,14 @@ def test_results_keyboard(page_admin):
     # should be on the instance change page
     expect(page_admin.get_by_text("Change user", exact=True)).to_be_visible()
     expect(page_admin.get_by_label("Username:")).to_have_value("playwright")
+
+
+def test_search_uri_encoded(page_admin):
+    """Verify that search terms containing encoded URI components are supported"""
+    open_modal(page_admin)
+    search_box(page_admin).type("#,&")
+
+    expect(
+        page_admin.get_by_text("Showing 1 app, 1 model, and 1 object")
+    ).to_be_visible()
+    expect(page_admin.get_by_role("link", name="###,&&&", exact=True)).to_be_visible()
