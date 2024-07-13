@@ -1,6 +1,7 @@
 """Verify that overrideable functions, in the view, are invoked correctly"""
 from unittest.mock import MagicMock, patch
 
+import django
 from django.contrib.auth.models import Permission, User
 from django.test import Client
 
@@ -10,8 +11,8 @@ from tests import request_search
 
 
 def request_with_patch(client: Client, user: User, method_name: str) -> MagicMock:
-    """Requests a search, with the given method patched. The user is set up with access to the
-    Team and Stadium models"""
+    """Requests a search, with the given method patched. The user is set up with "view" access
+    to the Team and Stadium models"""
     permission_ids = Permission.objects.filter(
         codename__in=["view_team", "view_stadium"]
     ).values_list("id", flat=True)
@@ -72,3 +73,39 @@ def test_filter_field(client_admin, user_admin):
     for field in expected_fields:
         # query should be passed in as-is (regression: was previously passed in as .lower())
         assert ("QuEry", field) in call_args_list
+
+
+def test_get_model_class(client_admin, user_admin):
+    """Verify that the get_model_class method is correctly invoked for each model that the
+    user has access to"""
+    patch_get_model_class = request_with_patch(
+        client_admin, user_admin, "get_model_class"
+    )
+    call_args_list = [c[0] for c in patch_get_model_class.call_args_list]
+
+    stadium_dict = {
+        "name": "Stadiums",
+        "object_name": "Stadium",
+        "perms": {"add": False, "change": False, "delete": False, "view": True},
+        "admin_url": "/admin/stadiums/stadium/",
+        "add_url": None,
+        "view_only": True,
+    }
+
+    team_dict = {
+        "name": "Teams",
+        "object_name": "Team",
+        "perms": {"add": False, "change": False, "delete": False, "view": True},
+        "admin_url": "/admin/teams/team/",
+        "add_url": None,
+        "view_only": True,
+    }
+
+    if django.VERSION[0] >= 4:
+        # model class only available in version >= 4.0.0
+        stadium_dict["model"] = Stadium
+        team_dict["model"] = Team
+
+    assert len(call_args_list) == 2
+    assert ("stadiums", stadium_dict) in call_args_list
+    assert ("teams", team_dict) in call_args_list
