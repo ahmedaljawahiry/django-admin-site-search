@@ -160,6 +160,7 @@ class AdminSiteSearchView:
 
     def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
         """Retrieve the model class from the dict created by admin.AdminSite, which (by default) contains:
+
         - "model": the class instance (only available in Django 4.x),
         - "name": capitalised verbose_name_plural,
         - "object_name": the class name,
