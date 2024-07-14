@@ -7,28 +7,38 @@ from dev.football.stadiums.factories import StadiumFactory
 from dev.football.teams.factories import TeamFactory
 from tests import request_search
 
+# It shouldn't make a difference, but check all auth scenarios for each search method
+pytestmark = pytest.mark.parametrize(
+    "site_search_method", ["model_char_fields", "admin_search_fields"]
+)
+
 
 @pytest.mark.parametrize(
     "is_staff, is_superuser, status_code",
     [(False, False, 302), (False, True, 302), (True, False, 200), (True, True, 200)],
 )
 def test_authenticated(
-    client_standard, user_standard, is_staff, is_superuser, status_code
+    client_standard,
+    user_standard,
+    is_staff,
+    is_superuser,
+    status_code,
+    site_search_method,
 ):
     """Verify that only staff users can access the API"""
     user_standard.is_staff = is_staff
     user_standard.is_superuser = is_superuser
     user_standard.save()
 
-    response = request_search(client_standard)
+    response = request_search(client_standard, site_search_method=site_search_method)
 
     assert response.status_code == status_code
 
 
-def test_unauthenticated(client_admin):
+def test_unauthenticated(client_admin, site_search_method):
     """Verify that unauthenticated users cannot access the API"""
     client_admin.logout()
-    response = request_search(client_admin)
+    response = request_search(client_admin, site_search_method=site_search_method)
 
     assert response.status_code == 302
 
@@ -43,7 +53,9 @@ def test_unauthenticated(client_admin):
         (["view_team", "change_team", "add_team"], True),
     ],
 )
-def test_permission_can_view(client_admin, user_admin, permissions, can_add):
+def test_permission_can_view(
+    client_admin, user_admin, permissions, can_add, site_search_method
+):
     """Verify that users with view_ or change_ permission can view the app,
     model, and objects. The value of url_add, for a model, is included if the
     user has the add_ permission"""
@@ -54,7 +66,9 @@ def test_permission_can_view(client_admin, user_admin, permissions, can_add):
     )
     user_admin.user_permissions.add(*permission_ids)
 
-    response = request_search(client_admin, query="abcd")
+    response = request_search(
+        client_admin, query="abcd", site_search_method=site_search_method
+    )
     data = response.json()
 
     assert response.status_code == 200
@@ -71,7 +85,9 @@ def test_permission_can_view(client_admin, user_admin, permissions, can_add):
 @pytest.mark.parametrize(
     "permissions", [[], ["add_team"], ["delete_team"], ["add_team", "delete_team"]]
 )
-def test_permission_cannot_view(client_admin, user_admin, permissions):
+def test_permission_cannot_view(
+    client_admin, user_admin, permissions, site_search_method
+):
     """Verify that users without the view_model permission cannot view the app, model,
     or objects. Other permissions have no effect."""
     TeamFactory(name="abcd")
@@ -81,7 +97,9 @@ def test_permission_cannot_view(client_admin, user_admin, permissions):
     )
     user_admin.user_permissions.add(*permission_ids)
 
-    response = request_search(client_admin, query="abcd")
+    response = request_search(
+        client_admin, query="abcd", site_search_method=site_search_method
+    )
     data = response.json()
 
     assert response.status_code == 200
@@ -90,7 +108,9 @@ def test_permission_cannot_view(client_admin, user_admin, permissions):
 
 
 @pytest.mark.parametrize("factory", [PlayerFactory, StadiumFactory])
-def test_permission_can_view_other(client_admin, user_admin, factory):
+def test_permission_can_view_other(
+    client_admin, user_admin, factory, site_search_method
+):
     """Verify that permissions are checked for each model, in each app"""
     factory(name="other model, in same app")
 
@@ -100,7 +120,9 @@ def test_permission_can_view_other(client_admin, user_admin, factory):
     )
     user_admin.user_permissions.add(*permission_ids)
 
-    response = request_search(client_admin, query="other")
+    response = request_search(
+        client_admin, query="other", site_search_method=site_search_method
+    )
     data = response.json()
 
     assert response.status_code == 200
@@ -108,13 +130,15 @@ def test_permission_can_view_other(client_admin, user_admin, factory):
     assert data["counts"] == {"apps": 0, "models": 0, "objects": 0}
 
 
-def test_admin_not_registered(client_super_admin):
+def test_admin_not_registered(client_super_admin, site_search_method):
     """Verify results are not returned for models that are not registered with
     the admin site"""
     # Permission model isn't registered with the admin, by default
     objects = Permission.objects.filter(codename__startswith="view_")
 
-    response = request_search(client_super_admin, query="view")
+    response = request_search(
+        client_super_admin, query="view", site_search_method=site_search_method
+    )
     data = response.json()
 
     assert len(objects) > 0

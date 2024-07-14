@@ -1,6 +1,7 @@
 """Tests verifying the API response"""
 from unittest.mock import patch
 
+import pytest
 from django.apps import apps
 from django.test import override_settings
 
@@ -188,12 +189,16 @@ def test_counts(client_super_admin):
     assert not data["errors"]
 
 
-def test_limit(client_super_admin):
+@pytest.mark.parametrize("method", ["model_char_fields", "admin_search_fields"])
+def test_limit(client_super_admin, method):
     """Verify that a maximum of 5 objects, for each model is returned"""
     for i in range(8):
         GroupFactory(name=f"Internal {i}")
 
-    response = request_search(client_super_admin, query="internal")
+    response = request_search(
+        client_super_admin, query="internal", site_search_method=method
+    )
+
     data = response.json()
 
     assert response.status_code == 200
