@@ -21,8 +21,10 @@ A global/site search modal for the Django admin.
 - 🔎 Search performed on:
   - App labels.
   - Model labels and field attributes.
-  - `CharField` values (with `__icontains`).
-    - Subclasses also included: `SlugField`, `URLField`, etc.
+  - Model instances, with two options for a search method:
+    1. `model_char_fields` (_default_): All `CharField` (and subclass) values, with `__icontains`.
+    2. `admin_search_fields`: Invoke each ModelAdmin's
+[get_search_results(...)](https://docs.djangoproject.com/en/5.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_search_results) method.
 - 🔒 Built-in auth: users can only search apps and models that they have permission to view.
 - ⚡ Results appear on-type, with throttling/debouncing to avoid excessive requests.
 - 🎹 Keyboard navigation (cmd+k, up/down, enter).
@@ -53,9 +55,6 @@ from admin_site_search.views import AdminSiteSearchView
 class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     ...
 ```
-
-By default, the search route is at `<admin_path>/search/`. The last part can be changed by overriding 
-the `site_search_path` class variable in your admin site.
 
 
 ### 3. Add Templates
@@ -92,7 +91,18 @@ position.
 
 ## Customisation
 
-Methods in `AdminSiteSearchView` can be extended to add custom logic.
+### Class attributes
+
+```python
+class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
+    
+    # Sets the last part of the search route (`<admin_path>/search/`).
+    site_search_path: str = "search/"
+    # Set the search method/behaviour.
+    site_search_method: Literal["model_char_fields", "admin_search_fields"] = "model_char_fields" 
+```
+
+### Methods
 
 ```python 
 def match_app(self, query: str, name: str) -> bool:
@@ -112,7 +122,9 @@ def match_objects(
     ...
 
 def filter_field(self, query: str, field: Field) -> Optional[Q]:
-    """DEFAULT: Returns a Q 'icontains' filter for Char fields, otherwise None"""
+    """DEFAULT: Returns a Q 'icontains' filter for Char fields, otherwise None
+    
+    Note: this method is only invoked if model_char_fields is the site_search_method."""
     ...
 
 def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
@@ -120,7 +132,7 @@ def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
     ...
 ```
 
-### Example
+#### Example
 
 **Add `TextField` results to search.**
 
@@ -131,7 +143,8 @@ from admin_site_search.views import AdminSiteSearchView
 
 
 class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
-    ...  
+    
+    site_search_method: "model_char_fields"  
   
     def filter_field(self, query: str, field: Field) -> Optional[Q]:
         """Extends super() to add TextField support to site search"""
@@ -141,7 +154,7 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 ```
 
 Note that this isn't done by default for performance reasons: `__icontains` on a 
-large number of text entries is inefficient.
+large number of text entries is suboptimal.
 
 
 ## Screenshots

@@ -8,11 +8,11 @@ from dev.football.teams.models import Squad, Team
 class TeamAdmin(BaseAdmin):
     """Admin for the Team model"""
 
-    pass
+    search_fields = ("name", "description", "=key")
 
 
 @admin.register(Squad)
 class SquadAdmin(BaseAdmin):
     """Admin for the Squad model"""
 
-    pass
+    search_fields = ("team__name", "players__name")

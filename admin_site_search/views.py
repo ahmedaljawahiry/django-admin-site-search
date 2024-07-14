@@ -1,3 +1,4 @@
+import sys
 from typing import List, Optional
 
 from django.apps import apps
@@ -6,11 +7,19 @@ from django.db.models import CharField, Field, Model, Q, QuerySet
 from django.http import JsonResponse
 from django.urls import path
 
+if sys.version_info >= (3, 8):
+    from typing import Literal
+
+    SiteSearchMethodType = Literal["model_char_fields", "admin_search_fields"]
+else:
+    SiteSearchMethodType = str
+
 
 class AdminSiteSearchView:
     """Adds a search/ view, to the admin site"""
 
     site_search_path = "search/"
+    site_search_method: SiteSearchMethodType = "model_char_fields"
 
     def get_urls(self):
         """Extends super()'s urls, to include search/"""
@@ -137,23 +146,42 @@ class AdminSiteSearchView:
     def match_objects(
         self, query: str, model_class: Model, model_fields: List[Field]
     ) -> QuerySet:
-        """Returns the QuerySet[:5] after performing an OR filter across all Char fields in the model."""
-        filters = Q()
+        """Returns the QuerySet[:5] after performing a search, as per the site_search_method:
 
-        for field in model_fields:
-            filter_ = self.filter_field(query, field)
-            if filter_:
-                filters |= filter_
+        - model_char_fields: OR filter across all Char fields in the model.
+        - admin_search_fields: delegates search to the model's corresponding admin search_fields.
+        """
+        results = model_class.objects.none()
 
-        if filters:
-            results = model_class.objects.filter(filters)[:5]
-        else:
-            results = model_class.objects.none()
+        if self.site_search_method == "model_char_fields":
+            filters = Q()
 
-        return results
+            for field in model_fields:
+                filter_ = self.filter_field(query, field)
+                if filter_:
+                    filters |= filter_
+
+            if filters:
+                results = model_class.objects.filter(filters)
+        elif self.site_search_method == "admin_search_fields":
+            model_admin = self._registry.get(model_class)
+            if model_admin and model_admin.search_fields:
+                # TODO: should pass the request through, in case users have customised this method
+                results, may_have_duplicates = model_admin.get_search_results(
+                    request=None, queryset=model_class.objects.all(), search_term=query
+                )
+
+                if may_have_duplicates:
+                    # can happen if search_fields contains a many-to-many relation
+                    results = results.distinct()
+
+        return results[:5]
 
     def filter_field(self, query: str, field: Field) -> Optional[Q]:
-        """Returns a Q 'icontains' filter for Char fields, otherwise None"""
+        """Returns a Q 'icontains' filter for Char fields, otherwise None.
+
+        Note: this method is only invoked if model_char_fields is the site_search_method.
+        """
         _query = query.lower()
         if isinstance(field, CharField):
             return Q(**{f"{field.name}__icontains": _query})
