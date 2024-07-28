@@ -214,7 +214,7 @@ def test_errors_on(client_super_admin):
     team = TeamFactory(name="Arsenal")
     StadiumFactory(name="Arsenal Stadium")
 
-    def error_if_stadium(app_label, model_dict):
+    def error_if_stadium(_, app_label, model_dict):
         """Fails for the Stadium model, default otherwise"""
         if model_dict["object_name"] == "Stadium":
             raise Exception("A test error occurred")

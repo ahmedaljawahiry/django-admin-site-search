@@ -4,7 +4,7 @@ from typing import List, Optional
 from django.apps import apps
 from django.conf import settings
 from django.db.models import CharField, Field, Model, Q, QuerySet
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.urls import path
 
 if sys.version_info >= (3, 8):
@@ -33,7 +33,7 @@ class AdminSiteSearchView:
 
         return urlpatterns
 
-    def search(self, request):
+    def search(self, request: HttpRequest) -> JsonResponse:
         """Returns a JsonResponse containing results from matching the "q" query parameter to
         application names, model names, and all instance CharFields. Only apps/models that the
         user has permission to view are searched."""
@@ -69,17 +69,17 @@ class AdminSiteSearchView:
                         # user has no permission to view this model, so skip
                         continue
 
-                    model_class = self.get_model_class(app["app_label"], model)
+                    model_class = self.get_model_class(request, app["app_label"], model)
                     if not model_class:
                         # unable to retrieve model class, so skip
                         continue
 
                     fields = model_class._meta.get_fields()
-                    objects = self.match_objects(query, model_class, fields)
+                    objects = self.match_objects(request, query, model_class, fields)
 
                     # haven't matched any objects, or model names, so skip
                     if not objects and not self.match_model(
-                        query, model["name"], model["object_name"], fields
+                        request, query, model["name"], model["object_name"], fields
                     ):
                         continue
 
@@ -117,18 +117,23 @@ class AdminSiteSearchView:
                     continue
 
             # we've matched some models or objects, or the app name
-            if app_result["models"] or self.match_app(query, app["name"]):
+            if app_result["models"] or self.match_app(request, query, app["name"]):
                 results["apps"].append(app_result)
                 counts["apps"] += 1
 
         return JsonResponse({"results": results, "counts": counts, "errors": errors})
 
-    def match_app(self, query: str, name: str) -> bool:
+    def match_app(self, request: HttpRequest, query: str, name: str) -> bool:
         """Case-insensitive match the app name"""
         return query.lower() in name.lower()
 
     def match_model(
-        self, query: str, name: str, object_name: str, fields: List[Field]
+        self,
+        request: HttpRequest,
+        query: str,
+        name: str,
+        object_name: str,
+        fields: List[Field],
     ) -> bool:
         """Case-insensitive match the model and field attributes"""
         _query = query.lower()
@@ -144,7 +149,11 @@ class AdminSiteSearchView:
         return False
 
     def match_objects(
-        self, query: str, model_class: Model, model_fields: List[Field]
+        self,
+        request: HttpRequest,
+        query: str,
+        model_class: Model,
+        model_fields: List[Field],
     ) -> QuerySet:
         """Returns the QuerySet[:5] after performing a search, as per the site_search_method:
 
@@ -157,7 +166,7 @@ class AdminSiteSearchView:
             filters = Q()
 
             for field in model_fields:
-                filter_ = self.filter_field(query, field)
+                filter_ = self.filter_field(request, query, field)
                 if filter_:
                     filters |= filter_
 
@@ -166,9 +175,10 @@ class AdminSiteSearchView:
         elif self.site_search_method == "admin_search_fields":
             model_admin = self._registry.get(model_class)
             if model_admin and model_admin.search_fields:
-                # TODO: should pass the request through, in case users have customised this method
                 results, may_have_duplicates = model_admin.get_search_results(
-                    request=None, queryset=model_class.objects.all(), search_term=query
+                    request=request,
+                    queryset=model_class.objects.all(),
+                    search_term=query,
                 )
 
                 if may_have_duplicates:
@@ -177,7 +187,9 @@ class AdminSiteSearchView:
 
         return results[:5]
 
-    def filter_field(self, query: str, field: Field) -> Optional[Q]:
+    def filter_field(
+        self, request: HttpRequest, query: str, field: Field
+    ) -> Optional[Q]:
         """Returns a Q 'icontains' filter for Char fields, otherwise None.
 
         Note: this method is only invoked if model_char_fields is the site_search_method.
@@ -186,7 +198,9 @@ class AdminSiteSearchView:
         if isinstance(field, CharField):
             return Q(**{f"{field.name}__icontains": _query})
 
-    def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
+    def get_model_class(
+        self, request: HttpRequest, app_label: str, model_dict: dict
+    ) -> Optional[Model]:
         """Retrieve the model class from the dict created by admin.AdminSite, which (by default) contains:
 
         - "model": the class instance (only available in Django 4.x),

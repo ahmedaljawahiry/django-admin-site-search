@@ -105,29 +105,29 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 ### Methods
 
 ```python 
-def match_app(self, query: str, name: str) -> bool:
+def match_app(self, request, query: str, name: str) -> bool:
     """DEFAULT: case-insensitive match the app name"""
     ...
 
 def match_model(
-    self, query: str, name: str, object_name: str, fields: List[Field]
+    self, request, query: str, name: str, object_name: str, fields: List[Field]
 ) -> bool:
     """DEFAULT: case-insensitive match the model and field attributes"""
     ...
 
 def match_objects(
-    self, query: str, model_class: Model, model_fields: List[Field]
+    self, request, query: str, model_class: Model, model_fields: List[Field]
 ) -> QuerySet:
     """DEFAULT: Returns the QuerySet after performing an OR filter across all Char fields in the model."""
     ...
 
-def filter_field(self, query: str, field: Field) -> Optional[Q]:
+def filter_field(self, request, query: str, field: Field) -> Optional[Q]:
     """DEFAULT: Returns a Q 'icontains' filter for Char fields, otherwise None
     
     Note: this method is only invoked if model_char_fields is the site_search_method."""
     ...
 
-def get_model_class(self, app_label: str, model_dict: dict) -> Optional[Model]:
+def get_model_class(self, request, app_label: str, model_dict: dict) -> Optional[Model]:
     """DEFAULT: Retrieve the model class from the dict created by admin.AdminSite"""
     ...
 ```
@@ -146,7 +146,7 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     
     site_search_method: "model_char_fields"  
   
-    def filter_field(self, query: str, field: Field) -> Optional[Q]:
+    def filter_field(self, request, query: str, field: Field) -> Optional[Q]:
         """Extends super() to add TextField support to site search"""
         if isinstance(field, TextField):
             return Q(**{f"{field.name}__icontains": query})
