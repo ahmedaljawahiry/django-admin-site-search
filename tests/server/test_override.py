@@ -1,11 +1,13 @@
 """Verify that overrideable functions, in the view, are invoked correctly"""
 from functools import partial
 from typing import Optional
+from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import django
 import pytest
 from django.contrib.auth.models import Permission, User
+from django.http import HttpRequest
 from django.test import Client
 
 from dev.football.stadiums.models import Stadium
@@ -41,14 +43,23 @@ def request_with_patch(client_admin, user_admin):
     return partial(_request_with_patch, client_admin, user_admin)
 
 
+def _assert_request_first_arg(call_args_list: list):
+    """Asserts that - for every call - the first arg is the same Request object"""
+    arg_0 = [c[0] for c in call_args_list]
+
+    assert len(set(arg_0)) == 1
+    assert isinstance(arg_0[0], HttpRequest)
+
+
 def test_match_apps(request_with_patch):
     """Verify the match_app method is correctly invoked for each app that the user has access to"""
     patch_match_app = request_with_patch(method_name="match_app")
     call_args_list = [c[0] for c in patch_match_app.call_args_list]
 
     assert len(call_args_list) == 2
-    assert ("QuEry", "Stadiums") in call_args_list
-    assert ("QuEry", "Teams") in call_args_list
+    assert (mock.ANY, "QuEry", "Stadiums") in call_args_list
+    assert (mock.ANY, "QuEry", "Teams") in call_args_list
+    _assert_request_first_arg(call_args_list)
 
 
 def test_match_model(request_with_patch):
@@ -57,13 +68,13 @@ def test_match_model(request_with_patch):
     call_args_list = [c[0] for c in patch_match_model.call_args_list]
 
     assert len(call_args_list) == 2
-    assert (
-        "QuEry",
-        "Stadiums",
-        "Stadium",
-        Stadium._meta.get_fields(),
-    ) in call_args_list
-    assert ("QuEry", "Teams", "Team", Team._meta.get_fields()) in call_args_list
+    for app_name, model_name, model_class in [
+        ("Stadiums", "Stadium", Stadium),
+        ("Teams", "Team", Team),
+    ]:
+        fields = model_class._meta.get_fields()
+        assert (mock.ANY, "QuEry", app_name, model_name, fields) in call_args_list
+    _assert_request_first_arg(call_args_list)
 
 
 @pytest.mark.parametrize(
@@ -77,8 +88,9 @@ def test_match_objects(request_with_patch, site_search_method):
     call_args_list = [c[0] for c in patch_match_objects.call_args_list]
 
     assert len(call_args_list) == 2
-    assert ("QuEry", Stadium, Stadium._meta.get_fields()) in call_args_list
-    assert ("QuEry", Team, Team._meta.get_fields()) in call_args_list
+    assert (mock.ANY, "QuEry", Stadium, Stadium._meta.get_fields()) in call_args_list
+    assert (mock.ANY, "QuEry", Team, Team._meta.get_fields()) in call_args_list
+    _assert_request_first_arg(call_args_list)
 
 
 def test_filter_field_invoked(request_with_patch):
@@ -93,7 +105,8 @@ def test_filter_field_invoked(request_with_patch):
     assert len(call_args_list) == len(expected_fields)
     for field in expected_fields:
         # query should be passed in as-is (regression: was previously passed in as .lower())
-        assert ("QuEry", field) in call_args_list
+        assert (mock.ANY, "QuEry", field) in call_args_list
+    _assert_request_first_arg(call_args_list)
 
 
 def test_filter_field_not_invoked(request_with_patch):
@@ -135,5 +148,6 @@ def test_get_model_class(request_with_patch):
         team_dict["model"] = Team
 
     assert len(call_args_list) == 2
-    assert ("stadiums", stadium_dict) in call_args_list
-    assert ("teams", team_dict) in call_args_list
+    assert (mock.ANY, "stadiums", stadium_dict) in call_args_list
+    assert (mock.ANY, "teams", team_dict) in call_args_list
+    _assert_request_first_arg(call_args_list)
