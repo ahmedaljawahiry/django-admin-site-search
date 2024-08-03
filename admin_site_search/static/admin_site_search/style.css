@@ -9,12 +9,14 @@
     cursor: pointer;
     transition-duration: 0.4s;
     font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-    background-color: var(--button-bg);
+    background-color: var(--primary);
     color: var(--button-fg);
 }
 
 .search-button:hover {
-    background-color: var(--button-hover-bg);
+    svg {
+        color: var(--header-branding-color);
+    }
 }
 
 .search-button kbd {
