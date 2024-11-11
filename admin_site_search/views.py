@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from django.apps import apps
 from django.conf import settings
+from django.contrib.admin import ModelAdmin
 from django.db.models import CharField, Field, Model, Q, QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.urls import path
@@ -36,7 +37,9 @@ class AdminSiteSearchView:
     def search(self, request: HttpRequest) -> JsonResponse:
         """Returns a JsonResponse containing results from matching the "q" query parameter to
         application names, model names, and all instance CharFields. Only apps/models that the
-        user has permission to view are searched."""
+        user has permission to view are searched.
+
+        :param request: The HTTPRequest object."""
         query = request.GET.get("q", "")
 
         results = {"apps": []}
@@ -124,7 +127,11 @@ class AdminSiteSearchView:
         return JsonResponse({"results": results, "counts": counts, "errors": errors})
 
     def match_app(self, request: HttpRequest, query: str, name: str) -> bool:
-        """Case-insensitive match the app name"""
+        """Case-insensitive match the app name.
+
+        :param request: The HTTPRequest object.
+        :param query: The search query string.
+        :param name: The name of the app."""
         return query.lower() in name.lower()
 
     def match_model(
@@ -135,7 +142,13 @@ class AdminSiteSearchView:
         object_name: str,
         fields: List[Field],
     ) -> bool:
-        """Case-insensitive match the model and field attributes"""
+        """Case-insensitive match the model and field attributes.
+
+        :param request: The HTTPRequest object.
+        :param query: The search query string.
+        :param name: The (verbose) name of the model.
+        :param object_name: The name of the model class.
+        :param fields: A list of the model's fields."""
         _query = query.lower()
         if _query in name.lower() or _query in object_name.lower():
             # return early if we match a name
@@ -159,8 +172,15 @@ class AdminSiteSearchView:
 
         - model_char_fields: OR filter across all Char fields in the model.
         - admin_search_fields: delegates search to the model's corresponding admin search_fields.
+
+        :param request: The HTTPRequest object.
+        :param query: The search query string.
+        :param model_class: The model class.
+        :param model_fields: A list of the model's fields.
         """
         results = model_class.objects.none()
+        model_admin = self._registry.get(model_class)
+        queryset = self.get_model_queryset(request, model_class, model_admin)
 
         if self.site_search_method == "model_char_fields":
             filters = Q()
@@ -171,14 +191,11 @@ class AdminSiteSearchView:
                     filters |= filter_
 
             if filters:
-                results = model_class.objects.filter(filters)
+                results = queryset.filter(filters)
         elif self.site_search_method == "admin_search_fields":
-            model_admin = self._registry.get(model_class)
             if model_admin and model_admin.search_fields:
                 results, may_have_duplicates = model_admin.get_search_results(
-                    request=request,
-                    queryset=model_class.objects.all(),
-                    search_term=query,
+                    request=request, queryset=queryset, search_term=query
                 )
 
                 if may_have_duplicates:
@@ -193,21 +210,43 @@ class AdminSiteSearchView:
         """Returns a Q 'icontains' filter for Char fields, otherwise None.
 
         Note: this method is only invoked if model_char_fields is the site_search_method.
+
+        :param request: The HTTPRequest object.
+        :param query: The search query string.
+        :param field: The model field to (optionally) filter on.
         """
         _query = query.lower()
         if isinstance(field, CharField):
             return Q(**{f"{field.name}__icontains": _query})
 
+    def get_model_queryset(
+        self,
+        request: HttpRequest,
+        model_class: Model,
+        model_admin: Optional[ModelAdmin],
+    ) -> QuerySet:
+        """Returns the model class' .objects.all() queryset.
+
+        :param request: The HTTPRequest object.
+        :param model_class: The model class.
+        :param model_admin: The model admin, which is non-None for all registered models.
+        """
+        return model_class.objects.all()
+
     def get_model_class(
         self, request: HttpRequest, app_label: str, model_dict: dict
     ) -> Optional[Model]:
-        """Retrieve the model class from the dict created by admin.AdminSite, which (by default) contains:
+        """Retrieves the model class from the dict created by admin.AdminSite, which (by default) contains:
 
         - "model": the class instance (only available in Django 4.x),
         - "name": capitalised verbose_name_plural,
         - "object_name": the class name,
         - "perms": dict of user permissions for this model,
-        - other (e.g. url) fields."""
+        - other (e.g. url) fields.
+
+        :param request: The HTTPRequest object.
+        :param app_label: The label/name of the model's app.
+        :param model_dict: A dict containing model information."""
         model_class = model_dict.get("model")
         if not model_class:
             # model_dict["model"] only available in django 4.x
