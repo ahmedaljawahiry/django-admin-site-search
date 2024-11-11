@@ -34,7 +34,7 @@ A global/site search modal for the Django admin.
 ## Requirements
 
 - Python 3.7 - 3.12.
-- Django 3.2 - 5.0.
+- Django 3.2 - 5.1.
 
 ## Setup
 
