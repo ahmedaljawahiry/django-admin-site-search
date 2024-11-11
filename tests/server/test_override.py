@@ -10,7 +10,9 @@ from django.contrib.auth.models import Permission, User
 from django.http import HttpRequest
 from django.test import Client
 
+from dev.football.stadiums.admin import StadiumAdmin
 from dev.football.stadiums.models import Stadium
+from dev.football.teams.admin import TeamAdmin
 from dev.football.teams.models import Team
 from tests import request_search
 
@@ -116,6 +118,22 @@ def test_filter_field_not_invoked(request_with_patch):
     )
 
     assert patch_field_fields.call_count == 0
+
+
+def test_get_model_queryset(request_with_patch):
+    """Verify that the get_model_queryset method is correctly invoked for each model that the user
+    has access to"""
+    patch_get_model_queryset = request_with_patch(method_name="get_model_queryset")
+    call_args_list = [c[0] for c in patch_get_model_queryset.call_args_list]
+
+    assert len(call_args_list) == 2
+    _assert_request_first_arg(call_args_list)
+
+    assert call_args_list[0][1] == Stadium
+    assert isinstance(call_args_list[0][2], StadiumAdmin)
+
+    assert call_args_list[1][1] == Team
+    assert isinstance(call_args_list[1][2], TeamAdmin)
 
 
 def test_get_model_class(request_with_patch):
