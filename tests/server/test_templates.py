@@ -1,5 +1,6 @@
 """Tests verifying templates are included in the admin site. I.e. ensure the extension
 to admin/base_site.html is supported/working."""
+import django
 import pytest
 from django.test import Client
 from django.urls import reverse
@@ -17,7 +18,10 @@ ELEMENTS_CUSTOM = [
 
 # presence confirms that existing elements are still loaded, and not overridden
 ELEMENT_HEADER = '<a href="/admin/">Django administration</a>'
-ELEMENT_FOOTER = '<div id="footer">'
+if django.VERSION[0] >= 5 and django.VERSION[1] >= 1:
+    ELEMENT_FOOTER = '<footer id="footer">'
+else:
+    ELEMENT_FOOTER = '<div id="footer">'
 ELEMENT_USER_TOOL = '<div id="user-tools">'
 
 
