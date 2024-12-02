@@ -21,6 +21,28 @@ class AdminSiteSearchView:
 
     site_search_path = "search/"
     site_search_method: SiteSearchMethodType = "model_char_fields"
+    _excluded_models: set[type[Model]] = set()
+
+    def _load_excluded_models(self):
+        """Load excluded models from settings."""
+
+        excluded_model_names = getattr(
+            settings, "ADMIN_SITE_SEARCH_EXCLUDED_MODELS", []
+        )
+        for model_name in excluded_model_names:
+            app_label, model_name = model_name.split(".")
+            model_class = self._get_model_class_by_name(app_label, model_name)
+            if model_class:
+                self._excluded_models.add(model_class)
+
+    def _get_model_class_by_name(
+        self, app_label: str, model_name: str
+    ) -> type[Model] | None:
+        """Get model class by app label and model name."""
+        try:
+            return apps.get_model(app_label, model_name)
+        except LookupError:
+            return None
 
     def get_urls(self):
         """Extends super()'s urls, to include search/"""
@@ -52,6 +74,7 @@ class AdminSiteSearchView:
                 {"results": results, "counts": counts, "errors": errors}
             )
 
+        self._load_excluded_models()
         # same app list used to create the admin page for a user
         app_list = self.get_app_list(request)
 
@@ -75,6 +98,9 @@ class AdminSiteSearchView:
                     model_class = self.get_model_class(request, app["app_label"], model)
                     if not model_class:
                         # unable to retrieve model class, so skip
+                        continue
+
+                    if model_class in self._excluded_models:
                         continue
 
                     fields = model_class._meta.get_fields()

@@ -1,6 +1,8 @@
 """Tests verifying functionality for searching/matching apps, models and objects"""
+
 import pytest
 
+from django.test import override_settings
 from admin_site_search.views import AdminSiteSearchView
 from dev.football.players.admin import PlayerAdmin
 from dev.football.players.factories import PlayerFactory
@@ -200,3 +202,20 @@ def test_objects_method_default():
 
     This is set to avoid breaking changes in behaviour."""
     assert AdminSiteSearchView.site_search_method == "model_char_fields"
+
+
+@override_settings(ADMIN_SITE_SEARCH_EXCLUDED_MODELS=["players.Player"])
+def test_model_excluded(client_super_admin):
+    """Verify that excluded models are not returned in search results"""
+
+    PlayerFactory(name="John Doe")
+    TeamFactory(name="John Team")
+    
+    resp = request_search(
+        client_super_admin,
+        query="John",
+        site_search_method="model_char_fields",
+    )
+    data = resp.json()
+    
+    assert data["counts"]["models"] == data["counts"]["objects"] == 1
