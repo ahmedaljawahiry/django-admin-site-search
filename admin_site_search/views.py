@@ -31,8 +31,7 @@ class AdminSiteSearchView:
         )
         for model_name in excluded_model_names:
             app_label, model_name = model_name.split(".")
-            model_class = self._get_model_class_by_name(app_label, model_name)
-            if model_class:
+            if model_class := self._get_model_class_by_name(app_label, model_name):
                 self._excluded_models.add(model_class)
 
     def _get_model_class_by_name(
