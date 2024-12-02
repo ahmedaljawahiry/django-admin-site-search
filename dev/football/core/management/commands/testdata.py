@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # create the "fixed" test user, unless it already exists
-        self.stdout.write(f"Creating constant test user...")
+        self.stdout.write("Creating constant test user...")
         try:
             User.objects.create_superuser(username=USERNAME, password=PASSWORD)
             self.stdout.write(self.style.SUCCESS(f'Created user "{USERNAME}"'))
@@ -32,7 +32,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f'User "{USERNAME}" already exists'))
 
         # create the "fixed" test teams, unless they already exist
-        self.stdout.write(f"Creating constant test teams...")
+        self.stdout.write("Creating constant test teams...")
         for name in [TEAM_1, TEAM_2, TEAM_3]:
             team_exists = Team.objects.filter(name=name).exists()
             if not team_exists:
@@ -42,7 +42,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'Team "{name}" already exists'))
 
         # create a bunch of random data (not strictly necessary, but why not)
-        self.stdout.write(f"Creating random data...")
+        self.stdout.write("Creating random data...")
         for factory in [
             PlayerFactory,
             PlayerAttributesFactory,

@@ -15,7 +15,7 @@ def page_admin(page) -> Page:
     leads to DJANGO_ALLOW_ASYNC_UNSAFE-related errors. For now, the server needs to be up-and-running
     before accessing this fixture.
     """
-    page.goto(f"http://localhost:8000/admin/")
+    page.goto("http://localhost:8000/admin/")
 
     re_username = re.compile("username", re.IGNORECASE)
     page.get_by_role("textbox", name=re_username).type(USERNAME)
