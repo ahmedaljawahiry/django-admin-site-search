@@ -101,7 +101,17 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     # Set the search method/behaviour.
     site_search_method: Literal["model_char_fields", "admin_search_fields"] = "model_char_fields" 
 ```
+### Excluding Models from Search
+You can exclude specific models from being searched by adding them to the `ADMIN_SITE_SEARCH_EXCLUDED_MODELS` setting in your `settings.py`. This setting should be a list of strings, where each string is in the format `app_label.ModelName`.
 
+For instance:
+```python
+# settings.py
+ADMIN_SITE_SEARCH_EXCLUDED_MODELS = [
+    "players.Player",
+    "teams.Team",
+]
+```
 ### Methods
 
 ```python 
