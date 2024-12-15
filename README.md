@@ -138,16 +138,29 @@ def get_model_class(
     """DEFAULT: Retrieve the model class from the dict created by admin.AdminSite"""
 ```
 
-#### Example
+### Examples
 
-**Add `TextField` results to search.**
+#### 1. Skip models from search.
 
 ```python
-from django.contrib import admin
-from django.db.models import Q, Field, TextField
-from admin_site_search.views import AdminSiteSearchView
+class CustomAdminSite(AdminSiteSearchView, admin.AdminSite):
 
+    def get_model_class(self, *args, **kwargs) -> Optional[Model]:
+        """Extends super() to skip the auth.User model"""
+        model_class = super().get_model_class(*args, **kwargs)
+        model_name = f"{model_class._meta.app_label}.{model_class._meta.object_name}"
 
+        if model_name == "auth.User":
+            return None
+
+        return model_class
+```
+
+This can be adapted to skip multiple models, or applications.
+
+#### 2. Add `TextField` results to search.
+
+```python
 class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     
     site_search_method: "model_char_fields"  
