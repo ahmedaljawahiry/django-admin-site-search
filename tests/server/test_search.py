@@ -1,4 +1,5 @@
 """Tests verifying functionality for searching/matching apps, models and objects"""
+
 import pytest
 
 from admin_site_search.views import AdminSiteSearchView

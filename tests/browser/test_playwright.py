@@ -1,5 +1,6 @@
 """Playwright tests verifying basic browser behaviour. These rely on the data created
 by the "testdata" management command."""
+
 from playwright.sync_api import expect
 
 from tests.browser.conftest import (

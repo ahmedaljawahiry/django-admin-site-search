@@ -1,4 +1,5 @@
 """Verify that overrideable functions, in the view, are invoked correctly"""
+
 from functools import partial
 from typing import Optional
 from unittest import mock

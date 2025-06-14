@@ -1,4 +1,5 @@
 """Tests verifying the API response"""
+
 from unittest.mock import patch
 
 import pytest

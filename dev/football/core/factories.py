@@ -1,4 +1,5 @@
 """Test factories for core or built-in models"""
+
 from django.contrib.auth.models import Group
 from factory import django, fuzzy
 
