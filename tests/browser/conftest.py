@@ -55,6 +55,17 @@ def expect_modal_closed(page: Page):
     expect(search_box(page)).not_to_be_visible()
 
 
+def expect_search_not_loaded(page: Page):
+    """Checks that the search button and modal are not on the page"""
+    search = search_button(page)
+    assert search.count() == 0
+    expect(search).not_to_be_visible()
+
+    expect_modal_closed(page)
+    page.keyboard.press("Control+k")
+    expect_modal_closed(page)
+
+
 def open_modal(page: Page, with_keyboard: bool = False):
     """Opens the modal, with the button or keyboard, then waits for it to appear"""
     if with_keyboard:

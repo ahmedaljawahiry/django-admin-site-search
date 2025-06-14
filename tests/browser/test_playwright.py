@@ -1,6 +1,8 @@
 """Playwright tests verifying basic browser behaviour. These rely on the data created
 by the "testdata" management command."""
 
+import re
+
 from playwright.sync_api import expect
 
 from tests.browser.conftest import (
@@ -9,6 +11,7 @@ from tests.browser.conftest import (
     open_modal,
     search_box,
     search_button,
+    expect_search_not_loaded,
 )
 
 
@@ -26,16 +29,30 @@ def test_modal_admin_pages(page_admin):
         expect_modal_open(page_admin)
 
 
-def test_modal_other_pages(page_admin):
+def test_modal_admin_unauthenticated_pages(page_admin):
+    """Verify that the modal is not available on unauthenticated pages in the admin"""
+    re_log_out = re.compile("Log out", re.IGNORECASE)
+    re_log_in_again = re.compile("Log in again", re.IGNORECASE)
+    re_username = re.compile("username", re.IGNORECASE)
+
+    # Logged out page -> no search
+    page_admin.get_by_role("button", name=re_log_out).click()
+    expect(page_admin.get_by_text("Logged out")).to_be_visible()
+    expect_search_not_loaded(page_admin)
+
+    # Log in page -> no search
+    page_admin.get_by_role("link", name=re_log_in_again).click()
+    expect(page_admin.get_by_role("textbox", name=re_username)).to_be_visible()
+    expect_search_not_loaded(page_admin)
+
+
+def test_modal_non_admin_pages(page_admin):
     """Verify that the modal is not available on non-admin pages"""
 
     # use a loop instead of parameterised test, to avoid loading & logging-in every time
-    for path in ["", "admin/logout/", "auth/user/add/", "auth/user/1/change/"]:
+    for path in ["", "auth/user/add/", "auth/user/1/change/"]:
         page_admin.goto(f"http://localhost:8000/{path}")
-        expect(search_button(page_admin)).not_to_be_visible()
-        expect_modal_closed(page_admin)
-        page_admin.keyboard.press("Control+k")
-        expect_modal_closed(page_admin)
+        expect_search_not_loaded(page_admin)
 
 
 def test_modal_click(page_admin):
