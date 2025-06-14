@@ -5,7 +5,7 @@
 [![PyPI](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/pypi.yaml/badge.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/pypi.yaml)
 [![Coverage Python](https://img.shields.io/badge/coverage%20(.py)-100%25-brightgreen.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml)
 [![Coverage Javascript](https://img.shields.io/badge/coverage%20(.js)-TBD-green.svg)](https://github.com/ahmedaljawahiry/django-admin-site-search/actions/workflows/test.yaml)
-[![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Pre-Commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logoColor=white)](https://github.com/ahmedaljawahiry/django-admin-site-search/blob/main/.pre-commit-config.yaml)
 [![PyPI version](https://img.shields.io/pypi/v/django-admin-site-search.svg)](https://pypi.org/project/django-admin-site-search/)
 [![Downloads](https://static.pepy.tech/badge/django-admin-site-search)](https://pepy.tech/project/django-admin-site-search)

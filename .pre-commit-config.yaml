@@ -1,16 +1,10 @@
 repos:
-- repo: https://github.com/ambv/black
-  rev: 23.1.0
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.11.13
   hooks:
-  - id: black
-    language_version: python3.10
-- repo: https://github.com/pycqa/isort
-  rev: 5.12.0
-  hooks:
-  - id: isort
-    args:
-      - "--profile"
-      - "black"
+    - id: ruff
+      args: [ --fix ]
+    - id: ruff-format
 - repo: https://github.com/Riverside-Healthcare/djLint
   rev: v1.7.0  # be careful updating this - last attempt (to v1.19) broke alpine.js components
   hooks:
