@@ -33,7 +33,7 @@ A global/site search modal for the Django admin.
 
 ## Requirements
 
-- Python 3.8 - 3.12.
+- Python 3.8 - 3.13.
 - Django 3.2 - 5.1.
 
 ## Setup

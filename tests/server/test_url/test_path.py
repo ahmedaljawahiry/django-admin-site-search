@@ -1,4 +1,5 @@
 """Verify that the search path supports admin sites with custom URLs"""
+
 import re
 
 from django.test import Client, override_settings

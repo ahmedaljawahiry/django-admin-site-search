@@ -1,5 +1,6 @@
 """Tests verifying templates are included in the admin site. I.e. ensure the extension
 to admin/base_site.html is supported/working."""
+
 import django
 import pytest
 from django.test import Client

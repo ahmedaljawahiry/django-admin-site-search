@@ -1,4 +1,5 @@
 """Basic settings for local development and tests"""
+
 from pathlib import Path
 
 DEBUG = True
