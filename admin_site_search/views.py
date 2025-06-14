@@ -1,4 +1,3 @@
-import sys
 from typing import List, Optional
 
 from django.apps import apps
@@ -7,20 +6,18 @@ from django.contrib.admin import ModelAdmin
 from django.db.models import CharField, Field, Model, Q, QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.urls import path
+from typing import Literal
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
-
-    SiteSearchMethodType = Literal["model_char_fields", "admin_search_fields"]
-else:
-    SiteSearchMethodType = str
+SiteSearchMethodType = Literal["model_char_fields", "admin_search_fields"]
 
 
 class AdminSiteSearchView:
     """Adds a search/ view, to the admin site"""
 
     site_search_path = "search/"
-    site_search_method: SiteSearchMethodType = "model_char_fields"
+    site_search_method: Literal["model_char_fields", "admin_search_fields"] = (
+        "model_char_fields"
+    )
 
     def get_urls(self):
         """Extends super()'s urls, to include search/"""
