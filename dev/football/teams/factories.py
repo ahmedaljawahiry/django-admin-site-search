@@ -1,4 +1,5 @@
 """Test factories for the teams app"""
+
 from factory import SubFactory, django, fuzzy
 
 from dev.football.stadiums.factories import StadiumFactory

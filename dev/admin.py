@@ -1,4 +1,5 @@
 """Custom configuration for the admin"""
+
 from django.contrib import admin
 from django.contrib.admin.apps import AdminConfig
 

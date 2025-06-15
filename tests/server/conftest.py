@@ -1,4 +1,5 @@
 """Pytest config and fixtures, for "unit" tests that run without a browser"""
+
 import pytest
 from django.contrib.auth.models import User
 from django.test.client import Client

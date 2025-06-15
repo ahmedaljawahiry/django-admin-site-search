@@ -1,5 +1,6 @@
 """Management command for creating test data. This should be called before running
 Playwright tests, but can also be useful for local dev."""
+
 from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 from django.db import IntegrityError

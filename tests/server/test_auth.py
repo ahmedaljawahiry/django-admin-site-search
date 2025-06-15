@@ -1,4 +1,5 @@
 """Tests verifying API access and authorization, for the search/ endpoint"""
+
 import pytest
 from django.contrib.auth.models import Permission
 

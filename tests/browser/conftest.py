@@ -1,4 +1,5 @@
 """Pytest fixtures and functions, for Playwright tests that run with a browser"""
+
 import re
 
 import pytest
@@ -52,6 +53,17 @@ def expect_modal_open(page: Page):
 def expect_modal_closed(page: Page):
     """Verifies that the modal is closed by checking that the search input is not visible"""
     expect(search_box(page)).not_to_be_visible()
+
+
+def expect_search_not_loaded(page: Page):
+    """Checks that the search button and modal are not on the page"""
+    search = search_button(page)
+    assert search.count() == 0
+    expect(search).not_to_be_visible()
+
+    expect_modal_closed(page)
+    page.keyboard.press("Control+k")
+    expect_modal_closed(page)
 
 
 def open_modal(page: Page, with_keyboard: bool = False):

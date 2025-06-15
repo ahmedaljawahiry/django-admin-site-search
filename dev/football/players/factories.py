@@ -1,4 +1,5 @@
 """Test factories for the players app"""
+
 from factory import SubFactory, django, fuzzy
 
 from dev.football.players.models import Player, PlayerAttributes

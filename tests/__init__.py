@@ -16,7 +16,7 @@ def request_search(
     endpoint, with the given client and query.
 
     If site_search_method is given, the value is set via patch.object(...)."""
-    url = f'{reverse("admin:site-search")}?q={query}'
+    url = f"{reverse('admin:site-search')}?q={query}"
 
     if site_search_method is None:
         # by default, don't patch anything
