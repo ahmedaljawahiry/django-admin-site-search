@@ -19,7 +19,7 @@ ELEMENTS_CUSTOM = [
 
 # presence confirms that existing elements are still loaded, and not overridden
 ELEMENT_HEADER = '<a href="/admin/">Django administration</a>'
-if django.VERSION[0] >= 5 and django.VERSION[1] >= 1:
+if (django.VERSION[0] >= 5 and django.VERSION[1] >= 1) or django.VERSION[0] >= 6:
     ELEMENT_FOOTER = '<footer id="footer">'
 else:
     ELEMENT_FOOTER = '<div id="footer">'

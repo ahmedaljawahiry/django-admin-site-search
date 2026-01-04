@@ -50,8 +50,8 @@ jobs:
         run: pip install tox
       - name: Setup server
         run: |
-          tox --devenv venv-dj52 -e py313-dj52
-          source venv-dj52/bin/activate
+          tox --devenv venv-dj60 -e py313-dj60
+          source venv-dj60/bin/activate
           python dev/manage.py migrate
           python dev/manage.py testdata
           python dev/manage.py runserver &
