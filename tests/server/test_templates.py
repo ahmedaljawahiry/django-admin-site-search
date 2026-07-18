@@ -15,6 +15,8 @@ ELEMENTS_CUSTOM = [
     '<link rel="stylesheet" href="/static/admin_site_search/style.css">',
     '<template x-data x-if="$store.search.isOpen">',
     '<button id="search-site-button"',
+    '<span class="search-button-label">',
+    '<kbd class="search-button-kbd">',
 ]
 
 # presence confirms that existing elements are still loaded, and not overridden
