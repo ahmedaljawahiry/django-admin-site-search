@@ -100,6 +100,9 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     site_search_path: str = "search/"
     # Set the search method/behaviour.
     site_search_method: Literal["model_char_fields", "admin_search_fields"] = "model_char_fields" 
+    # Labels shown after app/model results (None to hide).
+    site_search_app_suffix: str | None = "- app"
+    site_search_model_suffix: str | None = "- model"
 ```
 
 ### Methods
@@ -175,6 +178,28 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 Note that this isn't done by default for performance reasons: `__icontains` on a 
 large number of text entries is suboptimal.
 
+#### 3. Inject custom client-side UI.
+
+You can inject markup around the search box itself - e.g. tips, filters, a
+"recent searches" list - by overriding the empty
+`admin_site_search/modal_before_results.html` template. It renders inside the
+modal's `siteSearch` Alpine scope, so it has access to the same state as the
+rest of the modal: `value` (the current query), `helpText`, `results`, and the
+`focusOnInput()` / `onInputDebounce()` methods.
+
+Because the override runs inside that scope, it can read `value` directly to
+drive purely client-side UI - e.g. a help panel that appears when the user
+types `?`:
+
+```django
+{# templates/admin_site_search/modal_before_results.html #}
+<template x-if="value === '?'">
+    <dl class="site-search-help">
+        <dt>a name</dt><dd>Full-text search across apps, models and records</dd>
+        <dt>?</dt><dd>Show this help</dd>
+    </dl>
+</template>
+```
 
 ## Screenshots
 <img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/desktop-light-open.png" width="100%" alt="Desktop, light theme, modal open" />
