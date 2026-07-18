@@ -5,8 +5,8 @@
             class="search-button"
             aria-label="search site">
         {% include "admin_site_search/icon.html" %}
-        <span>Quick search...</span>
-        <kbd>
+        <span class="search-button-label">Quick search...</span>
+        <kbd class="search-button-kbd">
             <abbr x-bind:title="isMac ? 'Command' : 'Control'"
                   x-text="isMac ? '⌘' : 'Ctrl'">⌘</abbr>+ K
         </kbd>
