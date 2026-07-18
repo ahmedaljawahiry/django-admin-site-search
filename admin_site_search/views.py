@@ -6,9 +6,16 @@ from django.contrib.admin import ModelAdmin
 from django.db.models import CharField, Field, Model, Q, QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.urls import path
-from typing import Literal
+from typing import Literal, get_args
 
 SiteSearchMethodType = Literal["model_char_fields", "admin_search_fields"]
+
+SiteSearchButtonType = Literal["default", "compact", "hidden"]
+# Valid header-button modes, derived from the type so the runtime check in
+# each_context and the annotation can't drift.
+SITE_SEARCH_BUTTON_MODES: tuple[SiteSearchButtonType, ...] = get_args(
+    SiteSearchButtonType
+)
 
 
 class AdminSiteSearchView:
@@ -18,6 +25,9 @@ class AdminSiteSearchView:
     site_search_method: Literal["model_char_fields", "admin_search_fields"] = (
         "model_char_fields"
     )
+    # Header button style: "default" (filled pill) | "compact" (icon + hint) | "hidden".
+    # Unknown values fall back to "default". Surfaced to templates via each_context().
+    site_search_button: SiteSearchButtonType = "default"
 
     def get_urls(self):
         """Extends super()'s urls, to include search/"""
@@ -30,6 +40,18 @@ class AdminSiteSearchView:
         urlpatterns.insert(0, search)
 
         return urlpatterns
+
+    def each_context(self, request: HttpRequest) -> dict:
+        """Expose the configured header-button mode to templates (button.html).
+
+        Unknown values fall back to "default", so a typo degrades to the
+        filled-pill button rather than rendering nothing."""
+        context = super().each_context(request)
+        button = self.site_search_button
+        if button not in SITE_SEARCH_BUTTON_MODES:
+            button = "default"
+        context["site_search_button"] = button
+        return context
 
     def search(self, request: HttpRequest) -> JsonResponse:
         """Returns a JsonResponse containing results from matching the "q" query parameter to

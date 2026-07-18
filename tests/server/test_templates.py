@@ -1,10 +1,14 @@
 """Tests verifying templates are included in the admin site. I.e. ensure the extension
 to admin/base_site.html is supported/working."""
 
+from unittest.mock import patch
+
 import django
 import pytest
 from django.test import Client
 from django.urls import reverse
+
+from dev.admin import CustomAdminSite
 
 # presence confirms that the package's templates have loaded correctly
 ELEMENTS_CUSTOM = [
@@ -91,3 +95,27 @@ def test_logout(client_super_admin):
     assert ELEMENT_HEADER in content
     assert ELEMENT_FOOTER in content
     assert ELEMENT_USER_TOOL not in content
+
+
+def test_button_compact_renders_compact_button_not_pill(client_super_admin):
+    """site_search_button='compact' renders the compact button, not the pill."""
+    with patch.object(CustomAdminSite, "site_search_button", "compact"):
+        content = request_admin_content(client_super_admin)
+    assert "search-button-icon" in content
+    assert "search-button-hint" in content
+    assert 'id="search-site-button"' not in content
+
+
+def test_button_hidden_renders_no_header_button(client_super_admin):
+    """Search stays reachable via the hotkey."""
+    with patch.object(CustomAdminSite, "site_search_button", "hidden"):
+        content = request_admin_content(client_super_admin)
+    assert 'id="search-site-button"' not in content
+    assert "search-button-icon" not in content
+
+
+def test_button_unknown_falls_back_to_default_pill(client_super_admin):
+    """An unrecognised value degrades to the default pill."""
+    with patch.object(CustomAdminSite, "site_search_button", "bogus"):
+        content = request_admin_content(client_super_admin)
+    assert 'id="search-site-button"' in content

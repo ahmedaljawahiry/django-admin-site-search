@@ -208,3 +208,43 @@
         width: 20rem;
     }
 }
+
+.search-button-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--header-link-color, #fff);
+    opacity: 0.85;
+}
+
+.search-button-icon:hover {
+    opacity: 1;
+}
+
+.search-button-icon:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--header-link-color, #fff);
+    outline-offset: 2px;
+}
+
+.search-button-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.search-button-hint {
+    font-size: 0.75rem;
+    font-weight: normal;
+}
+
+.search-button-hint kbd {
+    font-family: monospace;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    padding: 0 3px;
+    opacity: 0.8;
+}
