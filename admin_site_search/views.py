@@ -10,6 +10,9 @@ from typing import Literal
 
 SiteSearchMethodType = Literal["model_char_fields", "admin_search_fields"]
 
+APP_SUFFIX = "- app"
+MODEL_SUFFIX = "- model"
+
 
 class AdminSiteSearchView:
     """Adds a search/ view, to the admin site"""
@@ -57,6 +60,9 @@ class AdminSiteSearchView:
                 "id": app["app_label"],
                 "name": app["name"],
                 "url": app["app_url"] if app["has_module_perms"] else None,
+                # Trailing label the modal renders next to the result; set here so
+                # it can be overridden per-result without touching the template.
+                "suffix": APP_SUFFIX,
                 "models": [],
             }
 
@@ -88,6 +94,7 @@ class AdminSiteSearchView:
                         "name": model["name"],
                         "url": model["admin_url"],
                         "url_add": model["add_url"] if can_add else None,
+                        "suffix": MODEL_SUFFIX,
                         "objects": [],
                     }
 
@@ -96,6 +103,9 @@ class AdminSiteSearchView:
                             "id": str(obj.pk),
                             "name": str(obj),
                             "url": f"{model['admin_url']}{obj.pk}",
+                            # None by default — objects rarely need a type label,
+                            # but consumers can populate it (rendered when truthy).
+                            "suffix": None,
                         }
                         model_result["objects"].append(object_result)
                         counts["objects"] += 1

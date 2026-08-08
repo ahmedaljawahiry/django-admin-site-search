@@ -7,7 +7,9 @@
                        x-bind:href="app.url"
                        @keydown="onKeyDown">
                         <span x-text="app.name"></span>
-                        <span class="result-suffix">- app</span>
+                        <template x-if="app.suffix">
+                            <span class="result-suffix" x-text="app.suffix"></span>
+                        </template>
                         <div class="divider"></div>
                     </a>
                     <template x-if="app.models.length > 0">
@@ -18,7 +20,9 @@
                                        x-bind:href="model.url"
                                        @keydown="onKeyDown">
                                         <span x-text="model.name"></span>
-                                        <span class="result-suffix">- model</span>
+                                        <template x-if="model.suffix">
+                                            <span class="result-suffix" x-text="model.suffix"></span>
+                                        </template>
                                     </a>
                                     <template x-if="model.objects.length > 0">
                                         <ul>
@@ -26,8 +30,12 @@
                                                 <li>
                                                     <a class="result result-entry"
                                                        x-bind:href="object.url"
-                                                       x-text="object.name"
-                                                       @keydown="onKeyDown"></a>
+                                                       @keydown="onKeyDown">
+                                                        <span x-text="object.name"></span>
+                                                        <template x-if="object.suffix">
+                                                            <span class="result-suffix" x-text="object.suffix"></span>
+                                                        </template>
+                                                    </a>
                                                 </li>
                                             </template>
                                         </ul>
