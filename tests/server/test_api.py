@@ -6,7 +6,7 @@ import pytest
 from django.apps import apps
 from django.test import override_settings
 
-from admin_site_search.views import AdminSiteSearchView
+from admin_site_search.views import APP_SUFFIX, MODEL_SUFFIX, AdminSiteSearchView
 from dev.football.core.factories import GroupFactory
 from dev.football.players.factories import PlayerAttributesFactory, PlayerFactory
 from dev.football.stadiums.factories import StadiumFactory
@@ -39,6 +39,7 @@ def test_apps(client_super_admin):
                 "id": "auth",
                 "name": "Authentication and Authorization",
                 "url": "/admin/auth/",
+                "suffix": APP_SUFFIX,
                 "models": [],
             }
         ]
@@ -59,12 +60,14 @@ def test_models(client_super_admin):
                 "id": "stadiums",
                 "name": "Stadiums",
                 "url": "/admin/stadiums/",
+                "suffix": APP_SUFFIX,
                 "models": [
                     {
                         "id": "stadiums.Stadium",
                         "name": "Stadiums",
                         "url": "/admin/stadiums/stadium/",
                         "url_add": "/admin/stadiums/stadium/add/",
+                        "suffix": MODEL_SUFFIX,
                         "objects": [],
                     }
                 ],
@@ -93,6 +96,7 @@ def test_model_class_none(client_super_admin):
                 "id": "stadiums",
                 "name": "Stadiums",
                 "url": "/admin/stadiums/",
+                "suffix": APP_SUFFIX,
                 "models": [],
             }
         ]
@@ -115,17 +119,20 @@ def test_objects(client_super_admin):
                 "id": "auth",
                 "name": "Authentication and Authorization",
                 "url": "/admin/auth/",
+                "suffix": APP_SUFFIX,
                 "models": [
                     {
                         "id": "auth.Group",
                         "name": "Groups",
                         "url": "/admin/auth/group/",
                         "url_add": "/admin/auth/group/add/",
+                        "suffix": MODEL_SUFFIX,
                         "objects": [
                             {
                                 "id": str(match.id),
                                 "name": str(match),
                                 "url": f"/admin/auth/group/{match.id}",
+                                "suffix": None,
                             }
                         ],
                     }
@@ -152,17 +159,20 @@ def test_objects_one_to_one_pk(client_super_admin):
                 "id": "players",
                 "name": "Players",
                 "url": "/admin/players/",
+                "suffix": APP_SUFFIX,
                 "models": [
                     {
                         "id": "players.PlayerAttributes",
                         "name": "Player attributess",
                         "url": "/admin/players/playerattributes/",
                         "url_add": "/admin/players/playerattributes/add/",
+                        "suffix": MODEL_SUFFIX,
                         "objects": [
                             {
                                 "id": str(match.pk),
                                 "name": str(match),
                                 "url": f"/admin/players/playerattributes/{match.pk}",
+                                "suffix": None,
                             }
                         ],
                     }
@@ -236,17 +246,20 @@ def test_errors_on(client_super_admin):
                 "id": "teams",
                 "name": "Teams",
                 "url": "/admin/teams/",
+                "suffix": APP_SUFFIX,
                 "models": [
                     {
                         "id": "teams.Team",
                         "name": "Teams",
                         "url": "/admin/teams/team/",
                         "url_add": "/admin/teams/team/add/",
+                        "suffix": MODEL_SUFFIX,
                         "objects": [
                             {
                                 "id": str(team.pk),
                                 "name": str(team),
                                 "url": f"/admin/teams/team/{team.pk}",
+                                "suffix": None,
                             }
                         ],
                     }
