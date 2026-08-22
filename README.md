@@ -175,6 +175,92 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
 Note that this isn't done by default for performance reasons: `__icontains` on a 
 large number of text entries is suboptimal.
 
+#### 3. Add a custom result section.
+
+`search()` itself can be overridden too, e.g. to merge in a section that isn't
+backed by a model/field match at all - like a "recently edited" shortcut:
+
+```python
+import json
+from django.http import JsonResponse
+from django.urls import reverse
+from admin_site_search.views import AdminSiteSearchView
+
+class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
+    def search(self, request):
+        # Start from the built-in flat model search - super().search() returns
+        # a JsonResponse, so decode its .content to get back a plain dict.
+        data = json.loads(super().search(request).content)
+
+        # ...then prepend your own section, in the same shape.
+        query = request.GET.get("q", "")
+        extra = self.recent_teams_section(query)
+        if extra:
+            data["results"]["apps"].insert(0, extra)
+            data["counts"]["apps"] += 1
+            data["counts"]["models"] += len(extra["models"])
+
+        return JsonResponse(data)
+
+    def recent_teams_section(self, query):
+        from dev.football.teams.models import Team
+        teams = Team.objects.filter(name__icontains=query)[:5]
+        if not teams:
+            return None
+        return {
+            "id": "recent-teams",
+            "name": "Recently edited teams",
+            "url": reverse("admin:teams_team_changelist"),
+            "suffix": "shortcut",  # optional row label (see below)
+            "models": [{
+                "id": "recent-teams-list",
+                "name": "Teams",
+                "url": reverse("admin:teams_team_changelist"),
+                "url_add": None,
+                "suffix": f"{len(teams)} match",
+                "objects": [
+                    {"id": str(t.pk), "name": str(t),
+                     "url": reverse("admin:teams_team_change", args=[t.pk]), "suffix": "team"}
+                    for t in teams
+                ],
+            }],
+        }
+```
+
+Using `reverse()` instead of hard-coded URL strings keeps the section working if
+the admin's URL patterns ever change.
+
+Any section just needs to match the app→model→object shape the frontend already
+renders, so it's indistinguishable from a "real" search result.
+
+`results.html` renders an optional `suffix` on app, model, and object rows when
+one is present, falling back to the default `- app` / `- model` labels when it's
+omitted - so custom sections can label themselves (`"shortcut"`, `"3 matches"`,
+etc.) without fighting the built-in styling.
+
+You can also inject markup around the search box itself - e.g. tips, filters, a
+"recent searches" list - by overriding the empty
+`admin_site_search/modal_before_results.html` template. It renders inside the
+modal's `siteSearch` Alpine scope, so it has access to the same state as the
+rest of the modal: `value` (the current query), `helpText`, `results`, and the
+`focusOnInput()` / `onInputDebounce()` methods.
+
+Because the override runs inside that scope, it can read `value` directly to
+drive purely client-side UI - e.g. a help panel that appears when the user
+types `?`:
+
+```django
+{# templates/admin_site_search/modal_before_results.html #}
+<template x-if="value === '?'">
+    <dl class="site-search-help">
+        <dt>a name</dt><dd>Full-text search across apps, models and records</dd>
+        <dt>?</dt><dd>Show this help</dd>
+    </dl>
+</template>
+```
+
+> These two hooks (result `suffix`es and `modal_before_results.html`) ship
+> together as part of the same change, so they land in the same release.
 
 ## Screenshots
 <img src="https://raw.githubusercontent.com/ahmedaljawahiry/django-admin-site-search/main/images/desktop-light-open.png" width="100%" alt="Desktop, light theme, modal open" />
