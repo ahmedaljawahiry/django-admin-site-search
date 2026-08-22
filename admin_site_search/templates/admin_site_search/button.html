@@ -1,14 +1,26 @@
 {% if not is_popup and request.user.is_authenticated %}
-    <button id="search-site-button"
-            x-data="{ isMac: navigator.platform.indexOf('Mac') !== -1 }"
-            @click="$store.search.toggle()"
-            class="search-button"
-            aria-label="search site">
-        {% include "admin_site_search/icon.html" %}
-        <span>Quick search...</span>
-        <kbd>
-            <abbr x-bind:title="isMac ? 'Command' : 'Control'"
-                  x-text="isMac ? '⌘' : 'Ctrl'">⌘</abbr>+ K
-        </kbd>
-    </button>
+    {% if site_search_button == "hidden" %}{# no header button — search stays reachable via the Cmd/Ctrl-K hotkey #}
+    {% elif site_search_button == "compact" %}
+        <button
+                x-data="{ isMac: navigator.platform.indexOf('Mac') !== -1 }"
+                @click="$store.search.toggle()"
+                class="search-button-icon"
+                aria-label="search site">
+            {% include "admin_site_search/icon.html" %}
+            <span class="search-button-hint">Press <kbd x-text="isMac ? '⌘K' : 'Ctrl+K'">⌘K</kbd> to search</span>
+        </button>
+    {% else %}
+        <button id="search-site-button"
+                x-data="{ isMac: navigator.platform.indexOf('Mac') !== -1 }"
+                @click="$store.search.toggle()"
+                class="search-button"
+                aria-label="search site">
+            {% include "admin_site_search/icon.html" %}
+            <span>Quick search...</span>
+            <kbd>
+                <abbr x-bind:title="isMac ? 'Command' : 'Control'"
+                      x-text="isMac ? '⌘' : 'Ctrl'">⌘</abbr>+ K
+            </kbd>
+        </button>
+    {% endif %}
 {% endif %}
