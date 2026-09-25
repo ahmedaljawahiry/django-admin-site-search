@@ -10,9 +10,6 @@ from typing import Literal
 
 SiteSearchMethodType = Literal["model_char_fields", "admin_search_fields"]
 
-APP_SUFFIX = "- app"
-MODEL_SUFFIX = "- model"
-
 
 class AdminSiteSearchView:
     """Adds a search/ view, to the admin site"""
@@ -21,6 +18,8 @@ class AdminSiteSearchView:
     site_search_method: Literal["model_char_fields", "admin_search_fields"] = (
         "model_char_fields"
     )
+    site_search_app_suffix: str | None = "- app"
+    site_search_model_suffix: str | None = "- model"
 
     def get_urls(self):
         """Extends super()'s urls, to include search/"""
@@ -60,9 +59,7 @@ class AdminSiteSearchView:
                 "id": app["app_label"],
                 "name": app["name"],
                 "url": app["app_url"] if app["has_module_perms"] else None,
-                # Trailing label the modal renders next to the result; set here so
-                # it can be overridden per-result without touching the template.
-                "suffix": APP_SUFFIX,
+                "suffix": self.site_search_app_suffix,
                 "models": [],
             }
 
@@ -94,7 +91,7 @@ class AdminSiteSearchView:
                         "name": model["name"],
                         "url": model["admin_url"],
                         "url_add": model["add_url"] if can_add else None,
-                        "suffix": MODEL_SUFFIX,
+                        "suffix": self.site_search_model_suffix,
                         "objects": [],
                     }
 
@@ -103,8 +100,6 @@ class AdminSiteSearchView:
                             "id": str(obj.pk),
                             "name": str(obj),
                             "url": f"{model['admin_url']}{obj.pk}",
-                            # None by default — objects rarely need a type label,
-                            # but consumers can populate it (rendered when truthy).
                             "suffix": None,
                         }
                         model_result["objects"].append(object_result)

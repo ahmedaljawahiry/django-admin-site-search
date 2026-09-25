@@ -6,7 +6,7 @@ import pytest
 from django.apps import apps
 from django.test import override_settings
 
-from admin_site_search.views import APP_SUFFIX, MODEL_SUFFIX, AdminSiteSearchView
+from admin_site_search.views import AdminSiteSearchView
 from dev.football.core.factories import GroupFactory
 from dev.football.players.factories import PlayerAttributesFactory, PlayerFactory
 from dev.football.stadiums.factories import StadiumFactory
@@ -39,7 +39,7 @@ def test_apps(client_super_admin):
                 "id": "auth",
                 "name": "Authentication and Authorization",
                 "url": "/admin/auth/",
-                "suffix": APP_SUFFIX,
+                "suffix": "- app",
                 "models": [],
             }
         ]
@@ -60,14 +60,14 @@ def test_models(client_super_admin):
                 "id": "stadiums",
                 "name": "Stadiums",
                 "url": "/admin/stadiums/",
-                "suffix": APP_SUFFIX,
+                "suffix": "- app",
                 "models": [
                     {
                         "id": "stadiums.Stadium",
                         "name": "Stadiums",
                         "url": "/admin/stadiums/stadium/",
                         "url_add": "/admin/stadiums/stadium/add/",
-                        "suffix": MODEL_SUFFIX,
+                        "suffix": "- model",
                         "objects": [],
                     }
                 ],
@@ -76,6 +76,19 @@ def test_models(client_super_admin):
     }
     assert data["counts"] == {"apps": 1, "models": 1, "objects": 0}
     assert not data["errors"]
+
+
+def test_suffix_overrides(client_super_admin):
+    """Verify the app/model suffixes can be overridden via class attributes"""
+    with (
+        patch.object(AdminSiteSearchView, "site_search_app_suffix", "(app)"),
+        patch.object(AdminSiteSearchView, "site_search_model_suffix", None),
+    ):
+        response = request_search(client_super_admin, query="capacity")
+
+    app = response.json()["results"]["apps"][0]
+    assert app["suffix"] == "(app)"
+    assert app["models"][0]["suffix"] is None
 
 
 def test_model_class_none(client_super_admin):
@@ -96,7 +109,7 @@ def test_model_class_none(client_super_admin):
                 "id": "stadiums",
                 "name": "Stadiums",
                 "url": "/admin/stadiums/",
-                "suffix": APP_SUFFIX,
+                "suffix": "- app",
                 "models": [],
             }
         ]
@@ -119,14 +132,14 @@ def test_objects(client_super_admin):
                 "id": "auth",
                 "name": "Authentication and Authorization",
                 "url": "/admin/auth/",
-                "suffix": APP_SUFFIX,
+                "suffix": "- app",
                 "models": [
                     {
                         "id": "auth.Group",
                         "name": "Groups",
                         "url": "/admin/auth/group/",
                         "url_add": "/admin/auth/group/add/",
-                        "suffix": MODEL_SUFFIX,
+                        "suffix": "- model",
                         "objects": [
                             {
                                 "id": str(match.id),
@@ -159,14 +172,14 @@ def test_objects_one_to_one_pk(client_super_admin):
                 "id": "players",
                 "name": "Players",
                 "url": "/admin/players/",
-                "suffix": APP_SUFFIX,
+                "suffix": "- app",
                 "models": [
                     {
                         "id": "players.PlayerAttributes",
                         "name": "Player attributess",
                         "url": "/admin/players/playerattributes/",
                         "url_add": "/admin/players/playerattributes/add/",
-                        "suffix": MODEL_SUFFIX,
+                        "suffix": "- model",
                         "objects": [
                             {
                                 "id": str(match.pk),
@@ -246,14 +259,14 @@ def test_errors_on(client_super_admin):
                 "id": "teams",
                 "name": "Teams",
                 "url": "/admin/teams/",
-                "suffix": APP_SUFFIX,
+                "suffix": "- app",
                 "models": [
                     {
                         "id": "teams.Team",
                         "name": "Teams",
                         "url": "/admin/teams/team/",
                         "url_add": "/admin/teams/team/add/",
-                        "suffix": MODEL_SUFFIX,
+                        "suffix": "- model",
                         "objects": [
                             {
                                 "id": str(team.pk),
