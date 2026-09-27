@@ -100,6 +100,9 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     site_search_path: str = "search/"
     # Set the search method/behaviour.
     site_search_method: Literal["model_char_fields", "admin_search_fields"] = "model_char_fields" 
+    # Labels shown after app/model results (None to hide).
+    site_search_app_suffix: str | None = "- app"
+    site_search_model_suffix: str | None = "- model"
 ```
 
 ### Methods
@@ -185,6 +188,7 @@ import json
 from django.http import JsonResponse
 from django.urls import reverse
 from admin_site_search.views import AdminSiteSearchView
+from teams.models import Team
 
 class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
     def search(self, request):
@@ -199,11 +203,11 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
             data["results"]["apps"].insert(0, extra)
             data["counts"]["apps"] += 1
             data["counts"]["models"] += len(extra["models"])
+            data["counts"]["objects"] += len(extra["models"][0]["objects"])
 
         return JsonResponse(data)
 
     def recent_teams_section(self, query):
-        from dev.football.teams.models import Team
         teams = Team.objects.filter(name__icontains=query)[:5]
         if not teams:
             return None
@@ -217,7 +221,7 @@ class MyAdminSite(AdminSiteSearchView, admin.AdminSite):
                 "name": "Teams",
                 "url": reverse("admin:teams_team_changelist"),
                 "url_add": None,
-                "suffix": f"{len(teams)} match",
+                "suffix": f"{len(teams)} found",
                 "objects": [
                     {"id": str(t.pk), "name": str(t),
                      "url": reverse("admin:teams_team_change", args=[t.pk]), "suffix": "team"}
@@ -235,8 +239,10 @@ renders, so it's indistinguishable from a "real" search result.
 
 `results.html` renders an optional `suffix` on app, model, and object rows, and
 shows no label when it's omitted or empty - so custom sections can label
-themselves (`"shortcut"`, `"3 matches"`, etc.) without fighting the built-in
-styling. Built-in app and model rows get `- app` / `- model` by default.
+themselves (`"shortcut"`, `"3 found"`, etc.) without fighting the built-in
+styling. Built-in app and model rows get `- app` / `- model` by default, which
+can be changed (or hidden with `None`) via the `site_search_app_suffix` /
+`site_search_model_suffix` class attributes.
 
 You can also inject markup around the search box itself - e.g. tips, filters, a
 "recent searches" list - by overriding the empty
