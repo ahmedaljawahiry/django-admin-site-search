@@ -1,0 +1,8 @@
+{% comment %}
+Extension point: rendered inside the search modal's `x-data="siteSearch"` body,
+immediately before the results list. Override it from your own
+`templates/admin_site_search/modal_before_results.html` to inject UI around the
+search box (banners, chips, help panels, etc.); the override runs in the existing
+`siteSearch` Alpine scope and can read `value` / `helpText` / `results` and call
+`focusOnInput()` / `onInputDebounce()`.
+{% endcomment %}

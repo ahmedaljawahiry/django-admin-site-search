@@ -21,6 +21,7 @@
                     <template x-if="helpText === 'Searching...'">
                         {% include "admin_site_search/spinner.html" %}
                     </template>
+                    {% include "admin_site_search/modal_before_results.html" %}
                     {% include "admin_site_search/results.html" %}
                 </div>
             </div>
